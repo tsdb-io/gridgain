@@ -320,7 +320,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
 
 //            awaitPartitionMapExchange();
             awaitPartitionMapExchange(false, false,
-                Arrays.stream(seg0).mapToObj(i -> grid(i).localNode()).collect(Collectors.toList()));
+                grid(seg0[0]).context().discovery().aliveServerNodes());
 
         try {
             tryPut(seg0);
@@ -408,7 +408,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
 
 //            awaitPartitionMapExchange();
             awaitPartitionMapExchange(false, false,
-                Arrays.stream(seg).mapToObj(i -> grid(i).localNode()).collect(Collectors.toList()));
+                grid(seg[0]).context().discovery().aliveServerNodes());
 
 //        try {
 ////            awaitPartitionMapExchange();
