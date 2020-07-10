@@ -318,15 +318,9 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         // Force split by removing last node from second DC.
         stopGrid(CONFIGLESS_GRID_IDX);
 
-        try {
 //            awaitPartitionMapExchange();
             awaitPartitionMapExchange(false, false,
                 Arrays.stream(seg0).mapToObj(i -> grid(i).localNode()).collect(Collectors.toList()));
-        }
-        catch (Throwable e) {
-            e.printStackTrace();
-            throw new Exception("qwer: " + G.allGrids().size() + ", " + G.allGrids().toString(), e);
-        }
 
         try {
             tryPut(seg0);
@@ -412,15 +406,9 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
 
         stopGrid(srvNode);
 
-        try {
 //            awaitPartitionMapExchange();
             awaitPartitionMapExchange(false, false,
                 Arrays.stream(seg).mapToObj(i -> grid(i).localNode()).collect(Collectors.toList()));
-        }
-        catch (Throwable e) {
-            e.printStackTrace();
-            throw new Exception("qwer: " + G.allGrids().size() + ", " + G.allGrids().toString(), e);
-        }
 
 //        try {
 ////            awaitPartitionMapExchange();
