@@ -22,6 +22,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.IgniteException;
@@ -46,6 +48,7 @@ import org.apache.ignite.testframework.MvccFeatureChecker;
 import org.junit.Assume;
 import org.junit.Test;
 
+import static java.util.stream.Stream.concat;
 import static org.apache.ignite.cache.CacheMode.PARTITIONED;
 import static org.apache.ignite.cache.CacheWriteSynchronizationMode.PRIMARY_SYNC;
 import static org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi.DFLT_PORT;
@@ -316,7 +319,9 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         stopGrid(CONFIGLESS_GRID_IDX);
 
         try {
-            awaitPartitionMapExchange();
+//            awaitPartitionMapExchange();
+            awaitPartitionMapExchange(false, false,
+                Arrays.stream(seg0).mapToObj(i -> grid(i).localNode()).collect(Collectors.toList()));
         }
         catch (Throwable e) {
             e.printStackTrace();
@@ -333,7 +338,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         }
 
         // Repair split with concurrent server node join race.
-        resolveSplitWithRace(CONFIGLESS_GRID_IDX);
+        resolveSplitWithRace(CONFIGLESS_GRID_IDX, seg0);
 
         // Repair split by adding activator node in topology.
         resolveSplit();
@@ -394,7 +399,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
      * @param srvNode server node index to simulate join race
      * @throws Exception If failed.
      */
-    private void resolveSplitWithRace(int srvNode) throws Exception {
+    private void resolveSplitWithRace(int srvNode, int[] seg) throws Exception {
         startGrid(RESOLVER_GRID_IDX);
 
         startGrid(srvNode);
@@ -408,12 +413,24 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         stopGrid(srvNode);
 
         try {
-            awaitPartitionMapExchange();
+//            awaitPartitionMapExchange();
+            awaitPartitionMapExchange(false, false,
+                Arrays.stream(seg).mapToObj(i -> grid(i).localNode()).collect(Collectors.toList()));
         }
         catch (Throwable e) {
             e.printStackTrace();
-            throw new Exception("asdf: " + G.allGrids().size() + ", " + G.allGrids().toString(), e);
+            throw new Exception("qwer: " + G.allGrids().size() + ", " + G.allGrids().toString(), e);
         }
+
+//        try {
+////            awaitPartitionMapExchange();
+//            awaitPartitionMapExchange(false, false,
+//                concat(Stream.of(grid(srvNode).localNode()), Arrays.stream(seg).mapToObj(i -> grid(i).localNode())).collect(Collectors.toList()));
+//        }
+//        catch (Throwable e) {
+//            e.printStackTrace();
+//            throw new Exception("asdf: " + G.allGrids().size() + ", " + G.allGrids().toString(), e);
+//        }
 
         try {
             tryPut(0);
