@@ -35,13 +35,13 @@ import org.apache.ignite.configuration.TopologyValidator;
 import org.apache.ignite.internal.IgniteEx;
 import org.apache.ignite.internal.processors.cache.distributed.dht.IgniteCacheTopologySplitAbstractTest;
 import org.apache.ignite.internal.util.typedef.F;
+import org.apache.ignite.internal.util.typedef.G;
 import org.apache.ignite.lang.IgnitePredicate;
 import org.apache.ignite.resources.CacheNameResource;
 import org.apache.ignite.resources.IgniteInstanceResource;
 import org.apache.ignite.resources.LoggerResource;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
-import org.apache.ignite.testframework.GridTestUtils;
 import org.apache.ignite.testframework.MvccFeatureChecker;
 import org.junit.Assume;
 import org.junit.Test;
@@ -63,16 +63,16 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
     private static final String ACTIVATOR_NODE_ATTR = "split.resolved";
 
     /** */
-    private static final int GRID_CNT = GridTestUtils.SF.applyLB(32, 16);
+    private static final int GRID_CNT = 32;//GridTestUtils.SF.applyLB(32, 16);
 
     /** */
-    private static final int CACHES_CNT = GridTestUtils.SF.applyLB(50, 20);
+    private static final int CACHES_CNT = 50;//GridTestUtils.SF.applyLB(50, 20);
 
     /** */
-    private static final int RESOLVER_GRID_IDX = GRID_CNT;
+    private static final int RESOLVER_GRID_IDX = GRID_CNT; //32 - не входит в сегменты
 
     /** */
-    private static final int CONFIGLESS_GRID_IDX = GRID_CNT + 1;
+    private static final int CONFIGLESS_GRID_IDX = GRID_CNT + 1; //33 не входит в сегменты
 
     /** */
     private static final String STATIC_IP = "127.0.0.1";
@@ -315,7 +315,13 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         // Force split by removing last node from second DC.
         stopGrid(CONFIGLESS_GRID_IDX);
 
-        awaitPartitionMapExchange();
+        try {
+            awaitPartitionMapExchange();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            throw new Exception("qwer: " + G.allGrids().size() + ", " + G.allGrids().toString(), e);
+        }
 
         try {
             tryPut(seg0);
@@ -401,7 +407,13 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
 
         stopGrid(srvNode);
 
-        awaitPartitionMapExchange();
+        try {
+            awaitPartitionMapExchange();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            throw new Exception("asdf: " + G.allGrids().size() + ", " + G.allGrids().toString(), e);
+        }
 
         try {
             tryPut(0);
