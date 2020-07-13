@@ -93,6 +93,7 @@ import org.apache.ignite.internal.processors.cache.GridCachePartitionExchangeMan
 import org.apache.ignite.internal.processors.cache.GridCacheSharedContext;
 import org.apache.ignite.internal.processors.cache.IgniteCacheProxy;
 import org.apache.ignite.internal.processors.cache.IgniteCacheProxyImpl;
+import org.apache.ignite.internal.processors.cache.IgniteTopologyValidatorGridSplitCacheTest;
 import org.apache.ignite.internal.processors.cache.PartitionUpdateCounter;
 import org.apache.ignite.internal.processors.cache.distributed.dht.GridDhtCacheAdapter;
 import org.apache.ignite.internal.processors.cache.distributed.dht.GridDhtTopologyFuture;
@@ -860,8 +861,13 @@ public abstract class GridCommonAbstractTest extends GridAbstractTest {
                                             ", topFut=" + topFut +
                                             ", locNode=" + g.cluster().localNode() + ']');
                                 }
-                                else
+                                else {
                                     match = true;
+//                                    if (IgniteTopologyValidatorGridSplitCacheTest.b.get()) {
+//                                        printPartitionState(c);
+//                                        throw new RuntimeException("My e");
+//                                    }
+                                }
                             }
                             else {
                                 if (i % 50 == 0)

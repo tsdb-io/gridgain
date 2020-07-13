@@ -22,6 +22,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.ignite.Ignite;
@@ -59,6 +60,7 @@ import static org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi.DFLT_PORT;
  * activator node'll enter a topology, enabling grid operations.
  */
 public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopologySplitAbstractTest {
+//    public static AtomicBoolean b = new AtomicBoolean(false);
     /** */
     private static final String DC_NODE_ATTR = "dc";
 
@@ -154,7 +156,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         disco.setIpFinder(new TcpDiscoveryVmIpFinder().setAddresses(segmented() ?
             (segment == 0 ? SEG_FINDER_0 : SEG_FINDER_1) : SEG_FINDER_ALL));
 
-//        if (idx != CONFIGLESS_GRID_IDX) {
+        if (idx != CONFIGLESS_GRID_IDX) {
             if (idx == RESOLVER_GRID_IDX) {
                 cfg.setClientMode(true);
 
@@ -162,7 +164,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
             }
             else
                 cfg.setActiveOnStart(false);
-//        }
+        }
         cfg.setUserAttributes(userAttrs);
 
         cfg.setMemoryConfiguration(new MemoryConfiguration().
@@ -301,12 +303,13 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         }
 
         stopGrids(seg1);
-
+        doSleep(3000);
         // Fix split by adding node from second DC.
         unsplit();
-
+        doSleep(3000);
         startGrid(CONFIGLESS_GRID_IDX);
         //живы seg0 и CONFIGLESS_GRID_IDX (33). Итого в кластере 17 нод.
+        doSleep(3000);
         awaitPartitionMapExchange(false, false, null, true, null);
 
         tryPut(seg0);
@@ -318,6 +321,8 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         // Force split by removing last node from second DC.
         stopGrid(CONFIGLESS_GRID_IDX);
 
+        doSleep(3000);
+//        b.set(true);
 //            awaitPartitionMapExchange();
 //            awaitPartitionMapExchange(false, false,
 //                grid(seg0[0]).context().discovery().aliveServerNodes(), true, null);
