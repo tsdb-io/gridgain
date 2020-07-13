@@ -154,7 +154,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         disco.setIpFinder(new TcpDiscoveryVmIpFinder().setAddresses(segmented() ?
             (segment == 0 ? SEG_FINDER_0 : SEG_FINDER_1) : SEG_FINDER_ALL));
 
-        if (idx != CONFIGLESS_GRID_IDX) {
+//        if (idx != CONFIGLESS_GRID_IDX) {
             if (idx == RESOLVER_GRID_IDX) {
                 cfg.setClientMode(true);
 
@@ -162,7 +162,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
             }
             else
                 cfg.setActiveOnStart(false);
-        }
+//        }
         cfg.setUserAttributes(userAttrs);
 
         cfg.setMemoryConfiguration(new MemoryConfiguration().
@@ -257,12 +257,12 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         grid.getOrCreateCaches(getCacheConfigurations());
 
         // Init grid index arrays
-        int[] seg1 = new int[GRID_CNT / 2];
+        int[] seg1 = new int[GRID_CNT / 2];//16 (от1 до 31)
 
         for (int i = 0; i < seg1.length; ++i)
             seg1[i] = i * 2 + 1;
 
-        int[] seg0 = new int[GRID_CNT - seg1.length];
+        int[] seg0 = new int[GRID_CNT - seg1.length];//16 (от 0 до 30)
 
         for (int i = 0; i < seg0.length; ++i)
             seg0[i] = i * 2;
@@ -306,8 +306,8 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         unsplit();
 
         startGrid(CONFIGLESS_GRID_IDX);
-
-        awaitPartitionMapExchange();
+        //живы seg0 и CONFIGLESS_GRID_IDX (33). Итого в кластере 17 нод.
+        awaitPartitionMapExchange(false, false, null, true, null);
 
         tryPut(seg0);
 
@@ -319,8 +319,9 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         stopGrid(CONFIGLESS_GRID_IDX);
 
 //            awaitPartitionMapExchange();
-            awaitPartitionMapExchange(false, false,
-                grid(seg0[0]).context().discovery().aliveServerNodes());
+//            awaitPartitionMapExchange(false, false,
+//                grid(seg0[0]).context().discovery().aliveServerNodes(), true, null);
+        awaitPartitionMapExchange(false, false, null, true, null);
 
         try {
             tryPut(seg0);
@@ -344,7 +345,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         // Removing one node from segmented DC, shouldn't reset repair state.
         stopGrid(0);
 
-        awaitPartitionMapExchange();
+        awaitPartitionMapExchange(false, false, null, true, null);
 
         for (int idx : seg0) {
             if (idx == 0)
@@ -358,7 +359,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         // Add node to segmented DC, shouldn't reset repair state.
         startGrid(0);
 
-        awaitPartitionMapExchange();
+        awaitPartitionMapExchange(false, false, null, true, null);
 
         assertEquals("Expecting put count", CACHES_CNT * seg0.length, tryPut(seg0));
     }
@@ -398,7 +399,7 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
 
         startGrid(srvNode);
 
-        awaitPartitionMapExchange();
+        awaitPartitionMapExchange(false, false, null, true, null);
 
         tryPut(srvNode);
 
@@ -407,8 +408,9 @@ public class IgniteTopologyValidatorGridSplitCacheTest extends IgniteCacheTopolo
         stopGrid(srvNode);
 
 //            awaitPartitionMapExchange();
-            awaitPartitionMapExchange(false, false,
-                grid(seg[0]).context().discovery().aliveServerNodes());
+//            awaitPartitionMapExchange(false, false,
+//                grid(seg[0]).context().discovery().aliveServerNodes(), true, null);
+        awaitPartitionMapExchange(false, false, null, true, null);
 
 //        try {
 ////            awaitPartitionMapExchange();
