@@ -111,7 +111,10 @@ public class ViewCacheClosure implements IgniteCallable<List<CacheInfo>> {
                     for (GridCacheContext cacheContext : context.caches()) {
                         String nameInGrp = cacheContext.cache().name();
                         IgniteCache<Object, Object> cache = cacheProcessor.jcache(nameInGrp);
-                        sizeSummary += cache.sizeLong();
+                        //Check for erroneus values
+                        if(cache.sizeLong() > -1L)
+                            sizeSummary += cache.sizeLong();
+
                     }
 
                     ci.setCacheSize(sizeSummary);
