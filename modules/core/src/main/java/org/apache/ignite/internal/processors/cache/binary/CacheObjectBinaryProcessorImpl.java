@@ -25,12 +25,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import javax.cache.CacheException;
+import javax.cache.configuration.Factory;
 import org.apache.ignite.IgniteBinary;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteClientDisconnectedException;
@@ -174,6 +176,9 @@ public class CacheObjectBinaryProcessorImpl extends GridProcessorAdapter impleme
 
     /** Cached affinity key field names. */
     private final ConcurrentHashMap<Integer, T1<BinaryField>> affKeyFields = new ConcurrentHashMap<>();
+
+    /** Cached compression SPIs. */
+    private final ConcurrentHashMap<T2<Boolean, String>, CompressionSpi> compressionSpis = new ConcurrentHashMap<>();
 
     /*
      * Static initializer
@@ -351,6 +356,19 @@ public class CacheObjectBinaryProcessorImpl extends GridProcessorAdapter impleme
         super.onKernalStart(active);
 
         discoveryStarted = true;
+    }
+
+    /** {@inheritDoc} */
+    @Override public void onKernalStop(boolean active) {
+        super.onKernalStop(active);
+
+        Iterator<CompressionSpi> iter = compressionSpis.values().iterator();
+
+        while (iter.hasNext()) {
+            iter.next().spiStop();
+
+            iter.remove();
+        }
     }
 
     /** {@inheritDoc} */
@@ -1050,12 +1068,25 @@ public class CacheObjectBinaryProcessorImpl extends GridProcessorAdapter impleme
 
         ctx.resource().injectGeneric(dfltAffMapper);
 
-        CompressionSpi compressionSpi = ccfg.getCompressionSpi();
+        Factory<CompressionSpi> compressionSpiFactory = ccfg.getCompressionSpi();
 
-        if (compressionSpi != null) {
-            ctx.resource().inject(compressionSpi);
+        CompressionSpi compressionSpi = null;
+        if (compressionSpiFactory != null) {
+            T2<Boolean, String> key = new T2(ccfg.getGroupName() != null, U.firstNotNull(
+                ccfg.getGroupName(), ccfg.getName()));
 
-            compressionSpi.spiStart(ctx.igniteInstanceName(), ccfg);
+            compressionSpi = compressionSpis.get(key);
+
+            if (compressionSpi == null) {
+                compressionSpi = compressionSpiFactory.create();
+
+                ctx.resource().inject(compressionSpi);
+
+                compressionSpi.spiStart(ctx.igniteInstanceName(), ccfg);
+
+                if (compressionSpis.put(key, compressionSpi) != null)
+                    assert false : "Compression SPI for cache created in parallel";
+            }
         }
 
         return new CacheObjectContext(ctx,

@@ -2373,6 +2373,9 @@ class ClusterCachesInfo {
 
         CU.validateCacheGroupsAttributesMismatch(log, cfg, startCfg, "encryptionEnabled", "Encrypted",
             cfg.isEncryptionEnabled(), startCfg.isEncryptionEnabled(), true);
+
+        CU.validateCacheGroupsAttributesMismatch(log, cfg, startCfg, "compressionSpi", "Compression SPI",
+            cfg.getCompressionSpi(), startCfg.getCompressionSpi(), true);
     }
 
     /**

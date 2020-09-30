@@ -425,7 +425,7 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
     /**
      * Compression implementation. If provided, data in cache will be compressed.
      */
-    private CompressionSpi compressionSpi;
+    private Factory<CompressionSpi> compressionSpi;
 
     /**
      * Flag indicating whether keys should be considered for compression. Default {@code false}.
@@ -2414,7 +2414,7 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
      * @return Compression SPI.
      */
     @IgniteExperimental
-    @Nullable public CompressionSpi getCompressionSpi() {
+    @Nullable public Factory<CompressionSpi> getCompressionSpi() {
         return compressionSpi;
     }
 
@@ -2425,7 +2425,7 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
      * @return {@code this} for chaining.
      */
     @IgniteExperimental
-    public CacheConfiguration<K, V> setCompressionSpi(CompressionSpi compressionSpi) {
+    public CacheConfiguration<K, V> setCompressionSpi(Factory<CompressionSpi> compressionSpi) {
         this.compressionSpi = compressionSpi;
 
         return this;
