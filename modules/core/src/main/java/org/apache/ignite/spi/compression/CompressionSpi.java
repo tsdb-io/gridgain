@@ -16,6 +16,7 @@
 package org.apache.ignite.spi.compression;
 
 import java.io.Serializable;
+import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.lang.IgniteExperimental;
 import org.apache.ignite.spi.IgniteSpi;
 import org.apache.ignite.spi.IgniteSpiException;
@@ -37,10 +38,6 @@ public interface CompressionSpi extends IgniteSpi, Serializable {
      */
     byte[] decompress(byte[] bytes);
 
-    /**
-     * {@inheritDoc}
-     *
-     * May be called multiple times during Ignite instance lifecycle.
-     */
-    @Override void spiStart(String igniteInstanceName) throws IgniteSpiException;
+    /** */
+    void spiStart(String igniteInstanceName, CacheConfiguration ccfg) throws IgniteSpiException;
 }

@@ -1055,7 +1055,7 @@ public class CacheObjectBinaryProcessorImpl extends GridProcessorAdapter impleme
         if (compressionSpi != null) {
             ctx.resource().inject(compressionSpi);
 
-            compressionSpi.spiStart(ctx.igniteInstanceName());
+            compressionSpi.spiStart(ctx.igniteInstanceName(), ccfg);
         }
 
         return new CacheObjectContext(ctx,
