@@ -18,6 +18,8 @@ package org.apache.ignite.internal.processors.cache;
 
 import org.apache.ignite.cache.affinity.AffinityKeyMapper;
 import org.apache.ignite.internal.GridKernalContext;
+import org.apache.ignite.spi.compression.CompressionSpi;
+import org.jetbrains.annotations.Nullable;
 
 /**
  *
@@ -45,16 +47,25 @@ public class CacheObjectContext implements CacheObjectValueContext {
     /** */
     private final boolean addDepInfo;
 
-    /** Boinary enabled flag. */
+    /** Binary enabled flag. */
     private final boolean binaryEnabled;
+
+    /** Compression SPI to for cache objects. */
+    private final CompressionSpi compressionSpi;
+
+    /** Compress keys flag. */
+    private final boolean compressKeys;
 
     /**
      * @param kernalCtx Kernal context.
+     * @param cacheName Cache name.
      * @param dfltAffMapper Default affinity mapper.
      * @param cpyOnGet Copy on get flag.
      * @param storeVal {@code True} if should store unmarshalled value in cache.
      * @param addDepInfo {@code true} if deployment info should be associated with the objects of this cache.
      * @param binaryEnabled Binary enabled flag.
+     * @param compressionSpi Compression SPI.
+     * @param compressKeys {@code True} if cache keys may be compressed.
      */
     @SuppressWarnings("deprecation")
     public CacheObjectContext(GridKernalContext kernalCtx,
@@ -64,7 +75,9 @@ public class CacheObjectContext implements CacheObjectValueContext {
         boolean cpyOnGet,
         boolean storeVal,
         boolean addDepInfo,
-        boolean binaryEnabled) {
+        boolean binaryEnabled,
+        CompressionSpi compressionSpi,
+        boolean compressKeys) {
         this.kernalCtx = kernalCtx;
         this.cacheName = cacheName;
         this.dfltAffMapper = dfltAffMapper;
@@ -73,6 +86,8 @@ public class CacheObjectContext implements CacheObjectValueContext {
         this.storeVal = storeVal;
         this.addDepInfo = addDepInfo;
         this.binaryEnabled = binaryEnabled;
+        this.compressionSpi = compressionSpi;
+        this.compressKeys = compressKeys;
     }
 
     /**
@@ -120,6 +135,16 @@ public class CacheObjectContext implements CacheObjectValueContext {
     /** {@inheritDoc} */
     @Override public boolean binaryEnabled() {
         return binaryEnabled;
+    }
+
+    /** {@inheritDoc} */
+    @Nullable @Override public CompressionSpi compressionSpi() {
+        return compressionSpi;
+    }
+
+    /** {@inheritDoc} */
+    @Override public boolean compressKeys() {
+        return compressKeys;
     }
 
     /**

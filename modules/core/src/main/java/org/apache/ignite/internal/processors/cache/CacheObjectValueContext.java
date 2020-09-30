@@ -16,12 +16,20 @@
 
 package org.apache.ignite.internal.processors.cache;
 
+import org.apache.ignite.IgniteSystemProperties;
 import org.apache.ignite.internal.GridKernalContext;
+import org.apache.ignite.lang.IgniteExperimental;
+import org.apache.ignite.spi.compression.CompressionSpi;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Context to get value of cache object.
  */
 public interface CacheObjectValueContext {
+    /** */
+    @IgniteExperimental
+    static final boolean COMPRESS_KEYS = IgniteSystemProperties.getBoolean("IGNITE_COMPRESS_KEYS", true);
+
     /**
      * @return Kernal context.
      */
@@ -46,4 +54,20 @@ public interface CacheObjectValueContext {
      * @return Binary enabled flag.
      */
     public boolean binaryEnabled();
+
+    /**
+     * @return {@code True} if cache keys should be compressed.
+     */
+    @IgniteExperimental
+    public default boolean compressKeys() {
+        return COMPRESS_KEYS;
+    }
+
+    /**
+     * @return Compression SPI implementation to be used with this cache's data.
+     */
+    @IgniteExperimental
+    @Nullable public default CompressionSpi compressionSpi() {
+        return null;
+    }
 }

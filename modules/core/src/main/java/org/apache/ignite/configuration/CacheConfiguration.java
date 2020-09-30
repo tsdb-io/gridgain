@@ -32,6 +32,7 @@ import javax.cache.integration.CacheLoader;
 import javax.cache.integration.CacheWriter;
 import org.apache.ignite.Ignite;
 import org.apache.ignite.IgniteCache;
+import org.apache.ignite.binary.BinaryObject;
 import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheEntryProcessor;
 import org.apache.ignite.cache.CacheInterceptor;
@@ -58,8 +59,10 @@ import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteExperimental;
 import org.apache.ignite.lang.IgnitePredicate;
 import org.apache.ignite.plugin.CachePluginConfiguration;
+import org.apache.ignite.spi.compression.CompressionSpi;
 import org.apache.ignite.spi.encryption.EncryptionSpi;
 import org.apache.ignite.spi.encryption.keystore.KeystoreEncryptionSpi;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * This class defines grid cache configuration. This configuration is passed to
@@ -419,6 +422,16 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
      */
     private boolean encryptionEnabled;
 
+    /**
+     * Compression implementation. If provided, data in cache will be compressed.
+     */
+    private CompressionSpi compressionSpi;
+
+    /**
+     * Flag indicating whether keys should be considered for compression. Default {@code false}.
+     */
+    private boolean compressKeys;
+
     /** Empty constructor (all values are initialized to their defaults). */
     public CacheConfiguration() {
         /* No-op. */
@@ -455,6 +468,8 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
         cacheLoaderFactory = cc.getCacheLoaderFactory();
         cacheMode = cc.getCacheMode();
         cacheWriterFactory = cc.getCacheWriterFactory();
+        compressionSpi = cc.getCompressionSpi();
+        compressKeys = cc.isCompressKeys();
         cpOnRead = cc.isCopyOnRead();
         dfltLockTimeout = cc.getDefaultLockTimeout();
         eagerTtl = cc.isEagerTtl();
@@ -2381,6 +2396,66 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
      */
     public CacheConfiguration<K, V> setEncryptionEnabled(boolean encryptionEnabled) {
         this.encryptionEnabled = encryptionEnabled;
+
+        return this;
+    }
+
+    /**
+     * Gets compression SPI used to compress data, {@code null} when compression is not used.
+     *
+     * If set to not-{@code null}, cache values (and possibly keys) will be stored in compressed format, provided that
+     * it is beneficial memory-wise.
+     *
+     * Currently, only {@code BinaryObject} keys and values may be considered for compression.
+     *
+     * @see #setCompressKeys(boolean)
+     * @see BinaryObject
+     *
+     * @return Compression SPI.
+     */
+    @IgniteExperimental
+    @Nullable public CompressionSpi getCompressionSpi() {
+        return compressionSpi;
+    }
+
+    /**
+     * Sets compression SPI to be used to compress data. When provided, cache data will be considered for encryption.
+     *
+     * @param compressionSpi Compression SPI.
+     * @return {@code this} for chaining.
+     */
+    @IgniteExperimental
+    public CacheConfiguration<K, V> setCompressionSpi(CompressionSpi compressionSpi) {
+        this.compressionSpi = compressionSpi;
+
+        return this;
+    }
+
+    /**
+     * Sets compress cache keys class.
+     *
+     * When {@code compressionSpi} is provided, cache values will be stored in compressed format,
+     * however, key compression needs to be enabled explicitly, since it may incur larger performance cost and may be
+     * less efficient, as keys are usually short.
+     *
+     * @see #setCompressionSpi(CompressionSpi)
+     *
+     * @return {@code True} if cache keys may be compressed.
+     */
+    @IgniteExperimental
+    public boolean isCompressKeys() {
+        return compressKeys;
+    }
+
+    /**
+     * Gets flag indicating whether cache keys will be considered for compression.
+     *
+     * @param compressKeys {@code true} if cache keys may be compressed.
+     * @return {@code this} for chaining.
+     */
+    @IgniteExperimental
+    public CacheConfiguration<K, V> setCompressKeys(boolean compressKeys) {
+        this.compressKeys = compressKeys;
 
         return this;
     }
