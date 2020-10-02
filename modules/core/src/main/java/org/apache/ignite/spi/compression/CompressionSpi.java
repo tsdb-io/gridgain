@@ -38,6 +38,11 @@ public interface CompressionSpi extends IgniteSpi, Serializable {
      */
     byte[] decompress(byte[] bytes);
 
+    /** {@inheritDoc} */
+    @Override default void spiStart(String igniteInstanceName) throws IgniteSpiException {
+        throw new UnsupportedOperationException();
+    }
+
     /** */
     void spiStart(String igniteInstanceName, CacheConfiguration ccfg) throws IgniteSpiException;
 }

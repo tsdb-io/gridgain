@@ -2425,8 +2425,8 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
      * @return {@code this} for chaining.
      */
     @IgniteExperimental
-    public CacheConfiguration<K, V> setCompressionSpi(Factory<CompressionSpi> compressionSpi) {
-        this.compressionSpi = compressionSpi;
+    public CacheConfiguration<K, V> setCompressionSpi(Factory<? extends CompressionSpi> compressionSpi) {
+        this.compressionSpi = (Factory<CompressionSpi>)compressionSpi;
 
         return this;
     }
@@ -2438,7 +2438,7 @@ public class CacheConfiguration<K, V> extends MutableConfiguration<K, V> {
      * however, key compression needs to be enabled explicitly, since it may incur larger performance cost and may be
      * less efficient, as keys are usually short.
      *
-     * @see #setCompressionSpi(CompressionSpi)
+     * @see #setCompressionSpi(Factory)
      *
      * @return {@code True} if cache keys may be compressed.
      */
