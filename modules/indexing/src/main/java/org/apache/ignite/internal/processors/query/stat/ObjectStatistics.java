@@ -13,22 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.ignite.internal.processors.query.stat;
 
+import java.io.Serializable;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
  * All statistics by some object (table or index)
  */
-public class ObjectStatistics {
+public class ObjectStatistics implements Serializable, Cloneable {
     /** Total number of rows in object. */
     private final long rowsCnt;
 
     /** Map columnKey to its statistic. */
     private final Map<String, ColumnStatistics> colNameToStat;
 
+    /**
+     * Constructor.
+     *
+     * @param rowsCnt rows count.
+     * @param colNameToStat columns to column statistics map.
+     */
     public ObjectStatistics(long rowsCnt, Map<String, ColumnStatistics> colNameToStat) {
         assert rowsCnt >= 0: "rowsCnt >= 0";
         assert colNameToStat != null: "colNameToStat != null";
@@ -37,17 +44,38 @@ public class ObjectStatistics {
         this.colNameToStat = Collections.unmodifiableMap(colNameToStat);
     }
 
+    /**
+     * @return object rows count.
+     */
     public long rowCount() {
         return rowsCnt;
     }
 
+    /**
+     * Get column statistics.
+     *
+     * @param colName column name.
+     * @return column statistics or {@code null} if there are no statistics for specified column.
+     */
     public ColumnStatistics columnStatistics(String colName) {
         return colNameToStat.get(colName);
     }
 
-    public Map<String, ColumnStatistics> getColNameToStat() {
-        return colNameToStat;
+    /**
+     * Clone object.
+     *
+     * @return clone.
+     */
+    public ObjectStatistics clone() {
+        return new ObjectStatistics(rowsCnt, new HashMap<>(colNameToStat));
     }
 
+    /**
+     * @return column name to column statistics map.
+     */
+    public Map<String, ColumnStatistics> columnsStatistics() {
+        return colNameToStat;
+    }
 }
+
 

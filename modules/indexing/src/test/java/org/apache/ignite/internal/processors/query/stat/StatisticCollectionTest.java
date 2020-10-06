@@ -17,7 +17,6 @@ package org.apache.ignite.internal.processors.query.stat;
 
 import org.apache.ignite.Ignite;
 import org.apache.ignite.testframework.junits.WithSystemProperty;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.text.SimpleDateFormat;
@@ -35,8 +34,13 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
     private static final String TYPES[] = new String[]{"BOOLEAN", "INT", "TINYINT", "SMALLINT","BIGINT",
             "DECIMAL", "DOUBLE","REAL","TIME","DATE","TIMESTAMP","VARCHAR","CHAR","UUID","BINARY","GEOMETRY"};
 
+    /** */
     private static final SimpleDateFormat TIME_FORMATTER = new SimpleDateFormat("HH:mm:ss");
+
+    /** */
     private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
+
+    /** */
     private static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override protected void beforeTestsStarted() throws Exception {
@@ -49,16 +53,13 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
     @Override protected void beforeTest() throws Exception {
         runSql("DROP TABLE IF EXISTS dtypes");
 
-
         StringBuilder create = new StringBuilder("CREATE TABLE dtypes (ID INT PRIMARY KEY, col_index int, col_no_index int");
-        for(String type : TYPES) {
+        for (String type : TYPES) {
             create.append(", col_").append(type).append(" ").append(type);
         }
         create.append(")");
 
         runSql(create.toString());
-        //runSql("CREATE TABLE med (a INT PRIMARY KEY, b INT, c INT) WITH \"TEMPLATE=" + cacheMode + "\"");
-        //runSql("CREATE TABLE small (a INT PRIMARY KEY, b INT, c INT) WITH \"TEMPLATE=" + cacheMode + "\"");
 
         runSql("CREATE INDEX dtypes_col_index ON dtypes(col_index)");
         for (String type : TYPES) {
@@ -87,7 +88,7 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
 
     private String getVal(String type, long counter) {
 
-        switch (type){
+        switch (type) {
             case "BOOLEAN":
                 return ((counter & 1) == 0) ? "False" : "True";
 
@@ -165,7 +166,7 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
 
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, isNullSql, hints);
 
-        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_COL_INDEX"}, isNullSql, wrongHints);
+        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{}, isNullSql, wrongHints);
 
         // TODO implement is not null check when optimizer will able to properly handle such condition
 
@@ -175,28 +176,27 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
 
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, sql, hints);
 
-        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_COL_INDEX"}, sql, wrongHints);
+        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{}, sql, wrongHints);
 
         String sqlMoreCond = sql + " and col_no_index = 213";
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, sqlMoreCond, noHints);
 
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, sqlMoreCond, hints);
 
-        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_COL_INDEX"}, sqlMoreCond, wrongHints);
+        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{}, sqlMoreCond, wrongHints);
 
         String descSql = sql + String.format(" order by col_%s desc", name);
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, descSql, noHints);
 
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, descSql, hints);
 
-        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_COL_INDEX"}, descSql, wrongHints);
+        checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{}, descSql, wrongHints);
 
         String descNoIndexSql = sql + " order by col_no_index desc";
 
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, descNoIndexSql, noHints);
 
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, descNoIndexSql, hints);
-
     }
 
     /**
@@ -246,8 +246,6 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
         doColumnTests("BIGINT", "<", "10");
         doColumnTests("BIGINT", ">=", "100");
     }
-
-    // "DECIMAL", "DOUBLE","REAL","TIME","DATE","TIMESTAMP","VARCHAR","CHAR","UUID","BINARY","GEOMETRY"
 
     /**
      * Test that optimizer will use decimal column index.
@@ -346,14 +344,5 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
         doColumnTests("BINARY", "=", "1242452143213");
         doColumnTests("BINARY", "<", "1242452143213");
         doColumnTests("BINARY", ">=", "1242452143213");
-    }
-
-    /**
-     * Test that optimizer will use geometry column index.
-     */
-    @Test
-    @Ignore
-    public void compareSelectWithGeometryConditions() {
-        // TODO
     }
 }

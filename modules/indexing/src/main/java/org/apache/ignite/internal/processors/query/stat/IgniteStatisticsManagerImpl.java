@@ -26,7 +26,6 @@ import org.apache.ignite.IgniteAuthenticationException;
 import org.apache.ignite.IgniteCheckedException;
 import org.apache.ignite.IgniteLogger;
 import org.apache.ignite.internal.GridKernalContext;
-import org.apache.ignite.internal.GridTopic;
 import org.apache.ignite.internal.processors.cache.distributed.dht.topology.GridDhtLocalPartition;
 import org.apache.ignite.internal.processors.cache.persistence.CacheDataRow;
 import org.apache.ignite.internal.processors.cache.query.QueryTable;
@@ -41,10 +40,7 @@ import org.gridgain.internal.h2.table.Column;
 import static org.apache.ignite.internal.processors.cache.distributed.dht.topology.GridDhtPartitionState.MOVING;
 import static org.apache.ignite.internal.processors.cache.distributed.dht.topology.GridDhtPartitionState.OWNING;
 
-
 public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
-
-    private static final Object topic = GridTopic.TOPIC_CACHE.topic("statistics");
 
     /** Logger. */
     @LoggerResource
@@ -65,34 +61,15 @@ public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
         return statsRepos;
     }
 
-    public void start() {
-        statsRepos.start();
-        //ctx.io().addMessageListener(topic, this);
-        //ctx.io().addMessageListener(GridTopic.TOPIC_QUERY, );
+    @Override public ObjectStatistics getLocalStatistics(String schemaName, String objName) {
+        return statsRepos.getLocalStatistics(new QueryTable(schemaName, objName));
     }
 
-
-    @Override
-    public ObjectStatistics getLocalStatistics(String schemaName, String objName) {
-        return statsRepos.getLocalStatistics(new QueryTable(schemaName, objName), true);
-    }
-
-    @Override
-    public void clearObjectStatistics(String schemaName, String objName, String... colNames) {
+    @Override public void clearObjectStatistics(String schemaName, String objName, String... colNames) {
         QueryTable tbl = new QueryTable(schemaName, objName);
         statsRepos.clearLocalPartitionsStatistics(tbl, colNames);
         statsRepos.clearLocalStatistics(tbl, colNames);
         statsRepos.clearGlobalStatistics(tbl, colNames);
-    }
-
-    public void onPartEvicted(QueryTable table, int partId) {
-
-        // Send partition stat
-        // TODO
-        // Remove partition stat
-        statsRepos.clearLocalPartitionStatistics(table, partId);
-        // Update local stat
-        // TODO
     }
 
     /**
@@ -119,8 +96,8 @@ public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
         return resultList.toArray(new Column[resultList.size()]);
     }
 
-    @Override
-    public void collectObjectStatistics(String schemaName, String objName, String ... colNames) throws IgniteCheckedException {
+    @Override public void collectObjectStatistics(String schemaName, String objName, String ... colNames)
+            throws IgniteCheckedException {
         GridH2Table tbl = schemaMgr.dataTable(schemaName, objName);
         if (tbl == null)
             throw new IgniteAuthenticationException(String.format("Can't find table %s.%s", schemaName, objName));
@@ -136,14 +113,14 @@ public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
         }
 
         Collection<ObjectPartitionStatistics> partsStats = collectPartitionStatistics(tbl, selectedColumns);
-        statsRepos.saveLocalPartitionsStatistics(tbl.identifier(), partsStats, fullStat);
+        statsRepos.saveLocalPartitionsStatistics(tbl.identifier(), partsStats); // TODO use FullStat here
 
         ObjectStatistics tblStats = aggregateLocalStatistics(tbl, selectedColumns, partsStats);
-        // TODO support refreshing only part of columns (step to columnar storage and ability to handle lack of some stats)
-        statsRepos.saveLocalStatistics(tbl.identifier(), tblStats, fullStat);
+        statsRepos.saveLocalStatistics(tbl.identifier(), tblStats);
     }
 
-    private Collection<ObjectPartitionStatistics> collectPartitionStatistics(GridH2Table tbl, Column[] selectedColumns) throws IgniteCheckedException {
+    private Collection<ObjectPartitionStatistics> collectPartitionStatistics(GridH2Table tbl, Column[] selectedColumns)
+            throws IgniteCheckedException {
         List<ObjectPartitionStatistics> tblPartStats = new ArrayList<>();
         GridH2RowDescriptor desc = tbl.rowDescriptor();
 
@@ -196,6 +173,17 @@ public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
         }
 
         return tblPartStats;
+    }
+
+    public ObjectStatistics aggregateLocalStatistics(QueryTable tbl, Collection<ObjectPartitionStatistics> tblPartStats) {
+
+        GridH2Table table = schemaMgr.dataTable(tbl.schema(), tbl.table());
+        if (table == null) {
+            // remove all loaded statistics.
+            log.info("Removing statistics for table " + tbl + " cause table doesn't exists.");
+            statsRepos.clearLocalPartitionsStatistics(tbl);
+        }
+        return aggregateLocalStatistics(table, table.getColumns(), tblPartStats);
     }
 
     private ObjectStatistics aggregateLocalStatistics(GridH2Table tbl, Column[] selectedColumns,

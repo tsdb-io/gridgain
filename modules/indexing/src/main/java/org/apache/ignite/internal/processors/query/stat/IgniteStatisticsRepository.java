@@ -15,11 +15,8 @@
  */
 package org.apache.ignite.internal.processors.query.stat;
 
-
 import org.apache.ignite.internal.processors.cache.query.QueryTable;
-
 import java.util.Collection;
-
 
 /**
  * Repository to store all necessary statistics. Can request absent ones from cluster and store to
@@ -31,7 +28,7 @@ public interface IgniteStatisticsRepository {
      * Replace all table statistics with specified ones.
      *
      * @param tbl table.
-     * @param statistics collection of tables partition statistics
+     * @param statistics collection of tables partition statistics.
      * @param fullStat if {@code True} - replace whole statistics, try to merge with existing - otherwise.
      */
     void saveLocalPartitionsStatistics(QueryTable tbl, Collection<ObjectPartitionStatistics> statistics, boolean fullStat);
@@ -45,22 +42,28 @@ public interface IgniteStatisticsRepository {
     Collection<ObjectPartitionStatistics> getLocalPartitionsStatistics(QueryTable tbl);
 
     /**
+     * Replace all table statistics with specified ones.
+     *
+     * @param tbl table.
+     * @param statistics collection of tables partition statistics
+     */
+    void saveLocalPartitionsStatistics(QueryTable tbl, Collection<ObjectPartitionStatistics> statistics);
+
+    /**
      * Clear partition statistics for specified table.
      *
      * @param tbl table to clear statistics by.
      * @param colNames if specified - only statistics by specified columns will be cleared.
      */
-    void clearLocalPartitionsStatistics(QueryTable tbl, String ... colNames);
+    void clearLocalPartitionsStatistics(QueryTable tbl, String... colNames);
 
     /**
      * Save specified local partition statistics.
      *
      * @param tbl table.
-     * @param partId partition id.
      * @param statistics statistics to save.
-     * @param fullStat if {@code True} - replace whole statistics, try to merge with existing - otherwise.
      */
-    void saveLocalPartitionStatistics(QueryTable tbl, int partId, ObjectPartitionStatistics statistics, boolean fullStat);
+    void saveLocalPartitionStatistics(QueryTable tbl, ObjectPartitionStatistics statistics);
 
     /**
      * Get partition statistics.
@@ -75,7 +78,7 @@ public interface IgniteStatisticsRepository {
      * Clear partition statistics.
      *
      * @param tbl table.
-     * @param partId partiton id.
+     * @param partId partition id.
      */
     void clearLocalPartitionStatistics(QueryTable tbl, int partId);
 
@@ -84,26 +87,24 @@ public interface IgniteStatisticsRepository {
      *
      * @param tbl object.
      * @param statistics statistics to save.
-     * @param fullStat if {@code True} - replace whole statistics, try to merge with existing - otherwise.
      */
-    void saveLocalStatistics(QueryTable tbl, ObjectStatistics statistics, boolean fullStat);
+    void saveLocalStatistics(QueryTable tbl, ObjectStatistics statistics);
 
     /**
-     * Cache saved local statistics.
+     * Calculate and cache saved local statistics.
      *
      * @param tbl object.
-     * @param statistics local statistics.
+     * @param statistics collection of partitions statistics.
      */
-    void cacheLocalStatistics(QueryTable tbl, ObjectStatistics statistics);
+    void cacheLocalStatistics(QueryTable tbl, Collection<ObjectPartitionStatistics> statistics);
 
     /**
      * Get local statistics.
      *
-     * @param tbl object to load statistics by
-     * @param tryLoad load flag, if {@code True} - try to load from cluster
+     * @param tbl object to load statistics by.
      * @return object local statistics or {@code null} if there are no statistics collected for such object.
      */
-    ObjectStatistics getLocalStatistics(QueryTable tbl, boolean tryLoad);
+    ObjectStatistics getLocalStatistics(QueryTable tbl);
 
     /**
      * Clear local object statistics.
@@ -111,38 +112,28 @@ public interface IgniteStatisticsRepository {
      * @param tbl object to clear local statistics by.
      * @param colNames if specified - only statistics by specified columns will be cleared.
      */
-    void clearLocalStatistics(QueryTable tbl, String ... colNames);
+    void clearLocalStatistics(QueryTable tbl, String... colNames);
 
     /**
      * Save global statistics.
      *
      * @param tbl table.
      * @param statistics statistics to save.
-     * @param fullStat if {@code True} - replace whole statistics, otherwise - try to merge with existing.
      */
-    void saveGlobalStatistics(QueryTable tbl, ObjectStatistics statistics, boolean fullStat);
-
-    /**
-     * Cache saved global statistics.
-     *
-     * @param tbl table.
-     * @param statistics statistics to save.
-     */
-    void cacheGlobalStatistics(QueryTable tbl, ObjectStatistics statistics);
+    void saveGlobalStatistics(QueryTable tbl, ObjectStatistics statistics);
 
     /**
      * Get global statistics by object.
      *
-     * @param tbl table
-     * @param tryLoad load flag, if {@code True} - try to load from cluster
-     * @return
+     * @param tbl table.
+     * @return object statistics of {@code null} if there are no global statistics for specified object.
      */
-    ObjectStatistics getGlobalStatistics(QueryTable tbl, boolean tryLoad);
+    ObjectStatistics getGlobalStatistics(QueryTable tbl);
 
     /**
      * Clear global statistics by object.
      *
-     * @param tbl table
+     * @param tbl table.
      * @param colNames if specified - only statistics by specified columns will be cleared.
      */
     void clearGlobalStatistics(QueryTable tbl, String ... colNames);
