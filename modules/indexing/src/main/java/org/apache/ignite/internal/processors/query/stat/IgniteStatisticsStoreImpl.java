@@ -23,8 +23,6 @@ import org.apache.ignite.internal.processors.cache.persistence.metastorage.ReadO
 import org.apache.ignite.internal.processors.cache.persistence.metastorage.ReadWriteMetastorage;
 import org.apache.ignite.internal.processors.cache.query.QueryTable;
 import org.apache.ignite.internal.processors.query.stat.messages.StatsObjectData;
-import org.apache.ignite.internal.processors.query.stat.messages.StatsPropagationMessage;
-import org.apache.ignite.resources.LoggerResource;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -32,32 +30,28 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
  * Sql statistics storage in metastore.
- * Will store all statistics related objects with prefix "stats."
+ * Will store all statistics related objects with patches like "stats.<SCHEMA>.<OBJECT>.<partId>".
  * Store only partition level statistics.
  */
 public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, MetastorageLifecycleListener {
 
-    // In local meta store it store partitions statistics by path: stats.<SCHEMA>.<OBJECT>.<partId>
+    /** */
     private final static String META_SEPARATOR = ".";
+
+    /** */
     private final static String META_STAT_PREFIX = "stats";
 
     /** Logger. */
-    @LoggerResource
     private IgniteLogger log;
 
     private final GridKernalContext ctx;
     private IgniteStatisticsRepository repository;
     private volatile ReadWriteMetastorage metastore;
-
-    // TODO remove with new serialization
-    private AtomicBoolean inited = new AtomicBoolean(false);
-    private AtomicBoolean initing = new AtomicBoolean(false);
 
     /**
      * Constructor.
@@ -69,6 +63,7 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
         this.ctx = ctx;
         this.repository = repository;
         ctx.internalSubscriptionProcessor().registerMetastorageListener(this);
+        log = ctx.log(IgniteStatisticsStoreImpl.class);
     }
 
     private void writePartStatistics(String schemaName, String objName, ObjectPartitionStatistics partStats) {
@@ -81,7 +76,7 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
         String key = getPartKeyPrefix(schemaName, objName);
         try {
             StatsObjectData statsData = StatisticsUtils.toMessage(schemaName, objName, StatsType.PARTITION, partStats);
-            metastore.write(key + partStats.partId(), statsData);
+            writeMeta(key + partStats.partId(), statsData);
         } catch (IgniteCheckedException e) {
             log.warning(String.format("Error while writing statistics %s.%s:%d to local storage: %s", schemaName, objName,
                     partStats.partId(), e.getMessage()), e);
@@ -115,6 +110,12 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
         return metaKey.substring(schemaIdx, tableIdx);
     }
 
+    /**
+     * Get partition id from given metastore key for object partition statistics.
+     *
+     * @param metaKey get to extract partition id from.
+     * @return partition id.
+     */
     private int getPartitionId(String metaKey) {
         int partIdx = metaKey.lastIndexOf(META_SEPARATOR);
         String partIdStr = metaKey.substring(partIdx);
@@ -124,19 +125,24 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
     private QueryTable getQueryTable(String metaKey) {
         int schemaIdx = metaKey.indexOf(META_SEPARATOR) + 1;
         int tableIdx = metaKey.indexOf(META_SEPARATOR, schemaIdx + 1);
+        int partIdx = metaKey.indexOf(META_SEPARATOR, tableIdx + 1);
 
-        return new QueryTable(metaKey.substring(schemaIdx, tableIdx), metaKey.substring(tableIdx + 1));
+        return new QueryTable(metaKey.substring(schemaIdx, tableIdx), metaKey.substring(tableIdx + 1, partIdx));
     }
 
-
+    /**
+     * Get prefix for partition level statistics like "stats.<schema>.<tblName>." To add partition id after it.
+     *
+     * @param schema schema name.
+     * @param tblName table name.
+     * @return prefix for the specified object.
+     */
     private String getPartKeyPrefix(String schema, String tblName) {
         return META_STAT_PREFIX + META_SEPARATOR + schema + META_SEPARATOR + tblName + META_SEPARATOR;
     }
 
-
     @Override
-    public void onReadyForRead(ReadOnlyMetastorage metastorage) throws IgniteCheckedException {
-
+    public void onReadyForRead(ReadOnlyMetastorage metastorage) {
     }
 
     @Override
@@ -146,7 +152,9 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
         metastorage.iterate(META_STAT_PREFIX, (key, statMsg) -> {
             QueryTable tbl = getQueryTable(key);
             try {
-                ObjectPartitionStatistics statistics = StatisticsUtils.toObjectPartitionStatistics((StatsObjectData)statMsg);
+                ObjectPartitionStatistics statistics = StatisticsUtils.toObjectPartitionStatistics(ctx,
+                        (StatsObjectData)statMsg);
+
                 statsMap.compute(tbl, (k,v) -> {
                     if (v == null)
                         v =  new ArrayList<>();
@@ -159,10 +167,10 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
                 log.warning("Unable to read statistics by key " + key);
             }
             if (log.isDebugEnabled()) {
-                log.debug("Local statistics for table " + tbl + " loaded");
+                log.debug("Local statistics for " + tbl + " loaded");
             }
         },true);
-        for(Map.Entry<QueryTable, List<ObjectPartitionStatistics>> entry : statsMap.entrySet())
+        for (Map.Entry<QueryTable, List<ObjectPartitionStatistics>> entry : statsMap.entrySet())
             repository.cacheLocalStatistics(entry.getKey(), entry.getValue());
     }
 
@@ -242,27 +250,36 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
 
     @Override
     public void saveLocalPartitionsStatistics(QueryTable tbl, Collection<ObjectPartitionStatistics> statistics) {
-        if (metastore == null)
-            // TODO: log warning
+        if (metastore == null) {
+            log.warning(String.format("Unable to save metadata %s.%s", tbl.schema(), tbl.table()));
             return;
+        }
         Map<Integer, ObjectPartitionStatistics> partitionStatistics = statistics.stream().collect(
                 Collectors.toMap(ObjectPartitionStatistics::partId, s -> s));
 
         try {
             iterateMeta(getPartKeyPrefix(tbl.schema(), tbl.table()), (k,v) -> {
-                ObjectPartitionStatistics newStats = partitionStatistics.get(getPartitionId(k));
+                Integer partId = getPartitionId(k);
+                ObjectPartitionStatistics newStats = partitionStatistics.get(partId);
                 try {
                     if (newStats == null)
                         metastore.remove(k);
-                    else
+                    else {
                         metastore.write(k, StatisticsUtils.toMessage(tbl.schema(), tbl.table(), StatsType.PARTITION,
                                 newStats));
+                        partitionStatistics.remove(partId);
+                    }
 
                 } catch (IgniteCheckedException e) {
                     log.warning(String.format("Error during saving statistics %s.%s to %s",
                             tbl.schema(), tbl.table(), k), e);
                 }
             }, false);
+            String statPrefix = getPartKeyPrefix(tbl.schema(), tbl.table());
+            for(Map.Entry<Integer, ObjectPartitionStatistics> partEntry : partitionStatistics.entrySet())
+                writeMeta(statPrefix + partEntry.getKey(), StatisticsUtils
+                        .toMessage(tbl.schema(), tbl.table(), StatsType.PARTITION, partEntry.getValue()));
+
         } catch (IgniteCheckedException e) {
             log.warning(String.format("Error during saving statistics %s.%s", tbl.schema(), tbl.table()), e);
         }
@@ -276,7 +293,7 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
         try {
             iterateMeta(getPartKeyPrefix(tbl.schema(), tbl.table()), (k,v) -> {
                 try {
-                    ObjectPartitionStatistics partStats = StatisticsUtils.toObjectPartitionStatistics((StatsObjectData)v);
+                    ObjectPartitionStatistics partStats = StatisticsUtils.toObjectPartitionStatistics(ctx, (StatsObjectData)v);
                     result.add(partStats);
                 } catch (IgniteCheckedException e) {
                     log.warning(String.format("Error during reading statistics %s.%s by key %s",
@@ -321,19 +338,19 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
                     statistics);
             writeMeta(partPrefix, statsMessage);
         } catch (IgniteCheckedException e) {
-            log.warning(String.format("Error while storing local partition statistics %s.%s:%d", tbl.schema(), tbl.table(),
-                    statistics.partId()), e);
+            log.warning(String.format("Error while storing local partition statistics %s.%s:%d", tbl.schema(),
+                    tbl.table(), statistics.partId()), e);
         }
-
     }
 
     @Override
     public ObjectPartitionStatistics getLocalPartitionStatistics(QueryTable tbl, int partId) {
         if (metastore == null)
             return null;
+
         String metaKey = getPartKeyPrefix(tbl.schema(), tbl.table()) + partId;
         try {
-            return StatisticsUtils.toObjectPartitionStatistics((StatsObjectData) readMeta(metaKey));
+            return StatisticsUtils.toObjectPartitionStatistics(ctx, (StatsObjectData) readMeta(metaKey));
         } catch (IgniteCheckedException e) {
             log.warning(String.format("Error while reading local partition statistics %s.%s:%d",
                     tbl.schema(), tbl.table(), partId), e);
@@ -345,6 +362,7 @@ public class IgniteStatisticsStoreImpl implements IgniteStatisticsStore, Metasto
     public void clearLocalPartitionStatistics(QueryTable tbl, int partId) {
         if (metastore == null)
             return;
+
         String metaKey = getPartKeyPrefix(tbl.schema(), tbl.table()) + partId;
         try {
             removeMeta(metaKey);

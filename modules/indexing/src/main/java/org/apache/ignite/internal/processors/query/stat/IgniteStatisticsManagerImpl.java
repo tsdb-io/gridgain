@@ -29,12 +29,10 @@ import org.apache.ignite.internal.GridKernalContext;
 import org.apache.ignite.internal.processors.cache.distributed.dht.topology.GridDhtLocalPartition;
 import org.apache.ignite.internal.processors.cache.persistence.CacheDataRow;
 import org.apache.ignite.internal.processors.cache.query.QueryTable;
-import org.apache.ignite.internal.processors.query.IgniteStatisticsRepositoryImpl;
 import org.apache.ignite.internal.processors.query.h2.SchemaManager;
 import org.apache.ignite.internal.processors.query.h2.opt.GridH2RowDescriptor;
 import org.apache.ignite.internal.processors.query.h2.opt.GridH2Table;
 import org.apache.ignite.internal.processors.query.h2.opt.H2Row;
-import org.apache.ignite.resources.LoggerResource;
 import org.gridgain.internal.h2.table.Column;
 
 import static org.apache.ignite.internal.processors.cache.distributed.dht.topology.GridDhtPartitionState.MOVING;
@@ -43,7 +41,6 @@ import static org.apache.ignite.internal.processors.cache.distributed.dht.topolo
 public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
 
     /** Logger. */
-    @LoggerResource
     private IgniteLogger log;
 
     private final GridKernalContext ctx;
@@ -56,6 +53,7 @@ public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
         this.schemaMgr = schemaMgr;
 
         statsRepos = new IgniteStatisticsRepositoryImpl(ctx);
+        log = ctx.log(IgniteStatisticsManagerImpl.class);
     }
     public IgniteStatisticsRepository statisticsRepository() {
         return statsRepos;
@@ -96,7 +94,7 @@ public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
         return resultList.toArray(new Column[resultList.size()]);
     }
 
-    @Override public void collectObjectStatistics(String schemaName, String objName, String ... colNames)
+    @Override public void collectObjectStatistics(String schemaName, String objName, String... colNames)
             throws IgniteCheckedException {
         GridH2Table tbl = schemaMgr.dataTable(schemaName, objName);
         if (tbl == null)
@@ -113,7 +111,7 @@ public class IgniteStatisticsManagerImpl implements  IgniteStatisticsManager {
         }
 
         Collection<ObjectPartitionStatistics> partsStats = collectPartitionStatistics(tbl, selectedColumns);
-        statsRepos.saveLocalPartitionsStatistics(tbl.identifier(), partsStats); // TODO use FullStat here
+        statsRepos.saveLocalPartitionsStatistics(tbl.identifier(), partsStats, fullStat);
 
         ObjectStatistics tblStats = aggregateLocalStatistics(tbl, selectedColumns, partsStats);
         statsRepos.saveLocalStatistics(tbl.identifier(), tblStats);

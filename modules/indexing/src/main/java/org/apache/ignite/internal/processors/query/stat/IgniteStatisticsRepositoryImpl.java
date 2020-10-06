@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.apache.ignite.internal.processors.query;
+package org.apache.ignite.internal.processors.query.stat;
 
 import org.apache.ignite.IgniteLogger;
 import org.apache.ignite.internal.GridKernalContext;
 import org.apache.ignite.internal.processors.cache.GridCacheUtils;
 import org.apache.ignite.internal.processors.cache.query.QueryTable;
-import org.apache.ignite.internal.processors.query.stat.ColumnStatistics;
-import org.apache.ignite.internal.processors.query.stat.IgniteStatisticsManagerImpl;
-import org.apache.ignite.internal.processors.query.stat.IgniteStatisticsRepository;
-import org.apache.ignite.internal.processors.query.stat.IgniteStatisticsStore;
-import org.apache.ignite.internal.processors.query.stat.IgniteStatisticsStoreImpl;
-import org.apache.ignite.internal.processors.query.stat.ObjectPartitionStatistics;
-import org.apache.ignite.internal.processors.query.stat.ObjectStatistics;
 
 
 import java.util.ArrayList;
@@ -262,11 +255,12 @@ public class IgniteStatisticsRepositoryImpl implements IgniteStatisticsRepositor
     }
 
     /**
-     * Add new statistics into base one (with overlapping of existing columns)
-     * @param base
-     * @param add
-     * @param <T>
-     * @return
+     * Add new statistics into base one (with overlapping of existing data).
+     *
+     * @param base old statistics.
+     * @param add updated statistics.
+     * @param <T> statistics type (partition or object one)
+     * @return combined statistics.
      */
     private <T extends ObjectStatistics> T add(T base, T add) {
         T result = (T)add.clone();

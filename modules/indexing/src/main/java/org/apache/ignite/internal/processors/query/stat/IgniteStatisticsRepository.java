@@ -42,14 +42,6 @@ public interface IgniteStatisticsRepository {
     Collection<ObjectPartitionStatistics> getLocalPartitionsStatistics(QueryTable tbl);
 
     /**
-     * Replace all table statistics with specified ones.
-     *
-     * @param tbl table.
-     * @param statistics collection of tables partition statistics
-     */
-    void saveLocalPartitionsStatistics(QueryTable tbl, Collection<ObjectPartitionStatistics> statistics);
-
-    /**
      * Clear partition statistics for specified table.
      *
      * @param tbl table to clear statistics by.

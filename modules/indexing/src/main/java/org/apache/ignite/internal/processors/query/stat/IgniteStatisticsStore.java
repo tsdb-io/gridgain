@@ -16,7 +16,6 @@
 package org.apache.ignite.internal.processors.query.stat;
 
 import org.apache.ignite.internal.processors.cache.query.QueryTable;
-
 import java.util.Collection;
 
 /**

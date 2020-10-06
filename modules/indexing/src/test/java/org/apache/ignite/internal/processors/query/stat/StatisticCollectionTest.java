@@ -44,7 +44,7 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
     private static final SimpleDateFormat TIMESTAMP_FORMATTER = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override protected void beforeTestsStarted() throws Exception {
-        Ignite node = startGridsMultiThreaded(1); // TBD 1!!!!!
+        Ignite node = startGridsMultiThreaded(1);
 
         node.getOrCreateCache(DEFAULT_CACHE_NAME);
     }
@@ -160,7 +160,7 @@ public class StatisticCollectionTest extends TableStatisticsAbstractTest {
         String[][] wrongHints = new String[1][];
         wrongHints[0] = new String[]{"DTYPES_COL_INDEX"};
 
-        String isNullSql = String.format("select * from dtypes i1 where col_%s is null", name);;
+        String isNullSql = String.format("select * from dtypes i1 where col_%s is null", name);
 
         checkOptimalPlanChosenForDifferentIndexes(grid(0), new String[]{"DTYPES_" + name}, isNullSql, noHints);
 
