@@ -39,7 +39,7 @@ import org.junit.Test;
 
 import static org.apache.ignite.IgniteSystemProperties.IGNITE_MASTER_KEY_NAME_TO_CHANGE_BEFORE_STARTUP;
 import static org.apache.ignite.cache.CacheWriteSynchronizationMode.FULL_SYNC;
-import static org.apache.ignite.internal.managers.encryption.GridEncryptionManager.ENCRYPTION_KEY_PREFIX;
+import static org.apache.ignite.internal.managers.encryption.GridEncryptionManager.ENCRYPTION_KEYS_PREFIX;
 import static org.apache.ignite.spi.encryption.keystore.KeystoreEncryptionSpi.DEFAULT_MASTER_KEY_NAME;
 import static org.apache.ignite.testframework.GridTestUtils.assertThrowsWithCause;
 import static org.apache.ignite.testframework.GridTestUtils.runAsync;
@@ -55,6 +55,7 @@ public class MasterKeyChangeTest extends AbstractEncryptionTest {
         IgniteConfiguration cfg = super.getConfiguration(name);
 
         cfg.setCommunicationSpi(new TestRecordingCommunicationSpi());
+        cfg.setConsistentId(name);
 
         return cfg;
     }
@@ -307,14 +308,14 @@ public class MasterKeyChangeTest extends AbstractEncryptionTest {
 
         DynamicCacheDescriptor desc = grid0.context().cache().cacheDescriptor(cacheName());
 
-        Serializable oldKey = metaStorage.read(ENCRYPTION_KEY_PREFIX + desc.groupId());
+        Serializable oldKey = metaStorage.read(ENCRYPTION_KEYS_PREFIX + desc.groupId());
 
         assertNotNull(oldKey);
 
         dbMgr.checkpointReadLock();
 
         // 6. Simulate group key write error to MetaStore for one node to check recovery from WAL.
-        metaStorage.write(ENCRYPTION_KEY_PREFIX + desc.groupId(), new byte[0]);
+        metaStorage.write(ENCRYPTION_KEYS_PREFIX + desc.groupId(), new byte[0]);
 
         dbMgr.checkpointReadUnlock();
 
@@ -416,7 +417,7 @@ public class MasterKeyChangeTest extends AbstractEncryptionTest {
     }
 
     /** {@inheritDoc} */
-    @Override protected void afterTest() throws Exception {
+    @Override protected void beforeTest() throws Exception {
         stopAllGrids();
 
         cleanPersistenceDir();

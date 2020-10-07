@@ -228,7 +228,26 @@ public abstract class WALRecord {
         OUT_OF_ORDER_UPDATE(62, LOGICAL),
 
         /** Master key change record. */
-        MASTER_KEY_CHANGE_RECORD(63, LOGICAL);
+        MASTER_KEY_CHANGE_RECORD(63, LOGICAL),
+
+        /** Encrypted WAL-record. */
+        ENCRYPTED_RECORD_V2(64, PHYSICAL),
+
+        /** Ecnrypted data record. */
+        ENCRYPTED_DATA_RECORD_V2(65, LOGICAL),
+
+        /** Master key change record containing multiple keys for single cache group. */
+        MASTER_KEY_CHANGE_RECORD_V2(66, LOGICAL),
+
+        /** Logical record to restart reencryption with the latest encryption key. */
+        REENCRYPTION_START_RECORD(67, LOGICAL),
+
+        /** Partition meta page delta record includes encryption status data. */
+        PARTITION_META_PAGE_DELTA_RECORD_V3(68, PHYSICAL),
+
+        /** Index meta page delta record includes encryption status data. */
+        INDEX_META_PAGE_DELTA_RECORD(69, PHYSICAL);
+
 
         /** Index for serialization. Should be consistent throughout all versions. */
         private final int idx;

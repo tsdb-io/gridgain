@@ -378,6 +378,30 @@ public class DistributedProcess<I extends Serializable, R extends Serializable> 
          *
          * @see GridEncryptionManager
          */
-        MASTER_KEY_CHANGE_FINISH
+        MASTER_KEY_CHANGE_FINISH,
+
+        /**
+         * Start snapshot procedure.
+         *
+         * @see IgniteSnapshotManager
+         */
+        START_SNAPSHOT,
+
+        /**
+         * End snapshot procedure.
+         *
+         * @see IgniteSnapshotManager
+         */
+        END_SNAPSHOT,
+
+        /**
+         * Cache group encyption key change prepare phase.
+         */
+        CACHE_GROUP_KEY_CHANGE_PREPARE,
+
+        /**
+         * Cache group encyption key change perform phase.
+         */
+        CACHE_GROUP_KEY_CHANGE_FINISH
     }
 }

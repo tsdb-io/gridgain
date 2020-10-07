@@ -37,6 +37,7 @@ import org.apache.ignite.failure.FailureContext;
 import org.apache.ignite.failure.FailureHandler;
 import org.apache.ignite.failure.StopNodeFailureHandler;
 import org.apache.ignite.internal.IgniteEx;
+import org.apache.ignite.internal.IgniteInternalFuture;
 import org.apache.ignite.internal.IgniteInterruptedCheckedException;
 import org.apache.ignite.internal.IgnitionEx;
 import org.apache.ignite.ShutdownPolicy;
@@ -329,6 +330,11 @@ public class IgniteSequentialNodeCrashRecoveryTest extends GridCommonAbstractTes
         /** {@inheritDoc} */
         @Override public boolean nextSnapshot() {
             return false;
+        }
+
+        /** {@inheritDoc} */
+        @Override public IgniteInternalFuture<?> finishedStateFut() {
+            return null;
         }
 
         /** {@inheritDoc} */
