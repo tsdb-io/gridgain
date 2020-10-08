@@ -223,7 +223,13 @@ public abstract class AbstractEncryptionTest extends GridCommonAbstractTest {
     /** */
     protected void createEncryptedCache(IgniteEx grid0, @Nullable IgniteEx grid1, String cacheName, String cacheGroup,
         boolean putData) throws IgniteInterruptedCheckedException {
-        IgniteCache<Long, Object> cache = grid0.createCache(cacheConfiguration(cacheName, cacheGroup));
+        CacheConfiguration<Long, String> ccfg = new CacheConfiguration<Long, String>(cacheName)
+            .setWriteSynchronizationMode(FULL_SYNC)
+            .setBackups(1)
+            .setGroupName(cacheGroup)
+            .setEncryptionEnabled(true);
+
+        IgniteCache<Long, String> cache = grid0.createCache(ccfg);
 
         if (grid1 != null)
             GridTestUtils.waitForCondition(() -> grid1.cachex(cacheName()) != null, 2_000L);

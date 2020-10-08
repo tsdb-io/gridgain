@@ -269,6 +269,7 @@ public class MasterKeyChangeTest extends AbstractEncryptionTest {
         CacheConfiguration<Long, String> ccfg = new CacheConfiguration<Long, String>(cacheName())
             .setWriteSynchronizationMode(FULL_SYNC)
             .setAtomicityMode(CacheAtomicityMode.TRANSACTIONAL)
+            .setBackups(1)
             .setEncryptionEnabled(true);
 
         // 2. Create cache.
@@ -395,7 +396,7 @@ public class MasterKeyChangeTest extends AbstractEncryptionTest {
 
         IgniteEx aliveNode = stopCrd ? grids.get2() : grids.get1();
 
-        IgniteFuture<Void> fut  = aliveNode.encryption().changeMasterKey(MASTER_KEY_NAME_2);
+        IgniteFuture<Void> fut = aliveNode.encryption().changeMasterKey(MASTER_KEY_NAME_2);
 
         spi.waitForBlocked();
 

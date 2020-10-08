@@ -78,6 +78,7 @@ import org.apache.ignite.spi.discovery.DiscoveryDataBag;
 import org.apache.ignite.spi.discovery.DiscoveryDataBag.GridDiscoveryData;
 import org.apache.ignite.spi.discovery.DiscoveryDataBag.JoiningNodeDiscoveryData;
 import org.apache.ignite.spi.encryption.EncryptionSpi;
+import org.apache.ignite.spi.encryption.noop.NoopEncryptionSpi;
 import org.jetbrains.annotations.Nullable;
 
 import static org.apache.ignite.IgniteSystemProperties.IGNITE_MASTER_KEY_NAME_TO_CHANGE_BEFORE_STARTUP;
@@ -416,6 +417,9 @@ public class GridEncryptionManager extends GridManagerAdapter<EncryptionSpi> imp
 
         if (res != null)
             return res;
+
+        if (ctx.config().getEncryptionSpi() instanceof NoopEncryptionSpi)
+            return null;
 
         if (isMasterKeyChangeInProgress()) {
             // Prevents new nodes join to avoid inconsistency of the master key.
@@ -1003,7 +1007,7 @@ public class GridEncryptionManager extends GridManagerAdapter<EncryptionSpi> imp
         String newMasterKeyName = IgniteSystemProperties.getString(IGNITE_MASTER_KEY_NAME_TO_CHANGE_BEFORE_STARTUP);
 
         if (newMasterKeyName != null) {
-            if (newMasterKeyName.equals(getSpi().getMasterKeyName())){
+            if (newMasterKeyName.equals(getSpi().getMasterKeyName())) {
                 log.info("Restored master key name equals to name from system property " +
                     IGNITE_MASTER_KEY_NAME_TO_CHANGE_BEFORE_STARTUP + ". This system property will be ignored and " +
                     "recommended to remove [masterKeyName=" + newMasterKeyName + ']');
