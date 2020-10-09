@@ -164,7 +164,8 @@ public class CompressionMetricsAdapter implements CompressionMetrics, Closeable 
 
                 if (acc >= BATCH_SIZE) {
                     double curAcceptance = acceptanceDividend.value() / (double)acc;
-                    double curRatio = ratioDividend.value() / (double)ratioDivisor.value();
+                    double curRatio = ratioDividend.value() == 0L ? 0.0 :
+                        (ratioDividend.value() / (double)ratioDivisor.value());
 
                     acceptanceDividend.reset();
                     acceptanceDivisor.reset();

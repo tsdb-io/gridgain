@@ -44,6 +44,11 @@ public class GridCacheBinaryObjectsAtomicNearDisabledSelfTest extends GridCacheB
     }
 
     /** {@inheritDoc} */
+    @Override protected boolean compressionEnabled() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
     @Override protected int gridCount() {
         return 3;
     }

@@ -53,7 +53,7 @@ public abstract class PageEvictionWithRebalanceAbstractTest extends PageEviction
         startGridsMultiThreaded(4);
 
         CacheConfiguration<Object, Object> cfg = cacheConfig("evict-rebalance", null, CacheMode.PARTITIONED,
-            atomicityMode, CacheWriteSynchronizationMode.PRIMARY_SYNC);
+            atomicityMode, CacheWriteSynchronizationMode.PRIMARY_SYNC, true);
 
         IgniteCache<Object, Object> cache = ignite(0).getOrCreateCache(cfg);
 

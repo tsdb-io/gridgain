@@ -67,6 +67,7 @@ import org.apache.ignite.internal.util.typedef.internal.CU;
 import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteBiInClosure;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 import org.apache.ignite.testframework.GridTestUtils;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 import org.apache.ignite.transactions.Transaction;
@@ -147,6 +148,12 @@ public abstract class GridCacheBinaryObjectsAbstractSelfTest extends GridCommonA
         cacheCfg.setBackups(1);
         cacheCfg.setOnheapCacheEnabled(false);
 
+        if (compressionEnabled()) {
+            cacheCfg.setCompressKeys(true);
+
+            cacheCfg.setCompressionSpi(new GzipCompressionSpi());
+        }
+
         return cacheCfg;
     }
 
@@ -194,6 +201,11 @@ public abstract class GridCacheBinaryObjectsAbstractSelfTest extends GridCommonA
      * @return Distribution mode.
      */
     protected abstract NearCacheConfiguration nearConfiguration();
+
+    /**
+     * @return Compression enabled flag.
+     */
+    protected abstract boolean compressionEnabled();
 
     /**
      * @return Grid count.

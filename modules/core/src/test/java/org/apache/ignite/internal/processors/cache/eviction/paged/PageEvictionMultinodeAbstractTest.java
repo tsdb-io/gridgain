@@ -42,6 +42,9 @@ public abstract class PageEvictionMultinodeAbstractTest extends PageEvictionAbst
     private static final CacheWriteSynchronizationMode[] WRITE_MODES = {CacheWriteSynchronizationMode.PRIMARY_SYNC,
         CacheWriteSynchronizationMode.FULL_SYNC, CacheWriteSynchronizationMode.FULL_ASYNC};
 
+    /** Compression modes. */
+    private static final boolean[] COMPRESSION_MODES = {false, true};
+
     /** {@inheritDoc} */
     @Override protected void beforeTestsStarted() throws Exception {
         startGridsMultiThreaded(4, false);
@@ -79,11 +82,15 @@ public abstract class PageEvictionMultinodeAbstractTest extends PageEvictionAbst
         for (int i = 0; i < CACHE_MODES.length; i++) {
             for (int j = 0; j < ATOMICITY_MODES.length; j++) {
                 for (int k = 0; k < WRITE_MODES.length; k++) {
-                    if (i + j + Math.min(k, 1) <= 1) {
-                        CacheConfiguration<Object, Object> cfg = cacheConfig(
-                            "evict" + i + j + k, null, CACHE_MODES[i], ATOMICITY_MODES[j], WRITE_MODES[k]);
+                    for (int l = 0; l < COMPRESSION_MODES.length; k++) {
+                        if (i + j + Math.min(k, 1) <= 1) {
+                            CacheConfiguration<Object, Object> cfg = cacheConfig(
+                                "evict" + i + j + k + l, null, CACHE_MODES[i], ATOMICITY_MODES[j],
+                                WRITE_MODES[k], COMPRESSION_MODES[l]);
 
-                        createCacheAndTestEviction(cfg);
+                            createCacheAndTestEviction(cfg);
+
+                        }
                     }
                 }
             }
@@ -99,7 +106,7 @@ public abstract class PageEvictionMultinodeAbstractTest extends PageEvictionAbst
         for (int i = 0; i < CACHE_MODES.length; i++) {
             CacheConfiguration<Object, Object> cfg = cacheConfig(
                 "evict" + i, null, CACHE_MODES[i], CacheAtomicityMode.TRANSACTIONAL_SNAPSHOT,
-                CacheWriteSynchronizationMode.FULL_SYNC);
+                CacheWriteSynchronizationMode.FULL_SYNC, false);
 
             createCacheAndTestEviction(cfg);
         }

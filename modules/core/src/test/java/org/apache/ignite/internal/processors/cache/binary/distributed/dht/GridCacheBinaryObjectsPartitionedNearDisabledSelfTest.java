@@ -44,6 +44,11 @@ public class GridCacheBinaryObjectsPartitionedNearDisabledSelfTest extends GridC
     }
 
     /** {@inheritDoc} */
+    @Override protected boolean compressionEnabled() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
     @Override protected int gridCount() {
         return 3;
     }

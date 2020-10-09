@@ -35,4 +35,9 @@ public class JdbcDynamicIndexTransactionalPartitionedSelfTest extends JdbcDynami
     @Override protected boolean nearCache() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean compression() {
+        return false;
+    }
 }

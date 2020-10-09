@@ -23,6 +23,7 @@ import java.util.TreeMap;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.cache.configuration.Factory;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheMode;
@@ -35,6 +36,8 @@ import org.apache.ignite.internal.util.typedef.internal.S;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgniteFuture;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
+import org.apache.ignite.spi.compression.CompressionSpi;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 import org.apache.ignite.testframework.GridTestUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -72,6 +75,11 @@ public abstract class CachePutAllFailoverAbstractTest extends GridCacheAbstractS
     /** {@inheritDoc} */
     @Override protected CacheMode cacheMode() {
         return PARTITIONED;
+    }
+
+    /** {@inheritDoc} */
+    @Override protected Factory<CompressionSpi> compressionSpi() {
+        return new GzipCompressionSpi();
     }
 
     /** {@inheritDoc} */

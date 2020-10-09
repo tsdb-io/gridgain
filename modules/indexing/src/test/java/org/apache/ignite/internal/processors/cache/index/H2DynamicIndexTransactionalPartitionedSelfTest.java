@@ -35,4 +35,9 @@ public class H2DynamicIndexTransactionalPartitionedSelfTest extends H2DynamicInd
     @Override protected boolean nearCache() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean gzip() {
+        return false;
+    }
 }

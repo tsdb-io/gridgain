@@ -52,4 +52,9 @@ public class IgniteDbMemoryLeakLargeObjectsTest extends IgniteDbMemoryLeakAbstra
     @Override protected long pagesMax() {
         return 35_000;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean compressionEnabled() {
+        return true;
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 GridGain Systems, Inc. and Contributors.
+ * Copyright 2020 GridGain Systems, Inc. and Contributors.
  *
  * Licensed under the GridGain Community Edition License (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package org.apache.ignite.internal.processors.cache.persistence;
+package org.apache.ignite.internal.processors.cache.distributed.near;
 
-import org.apache.ignite.internal.processors.database.IgniteDbSingleNodePutGetTest;
+import javax.cache.configuration.Factory;
+import org.apache.ignite.spi.compression.CompressionSpi;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 
 /**
- *
+ * Tests for fields queries.
  */
-public class IgnitePdsSingleNodePutGetPersistenceTest extends IgniteDbSingleNodePutGetTest {
+public class IgniteCacheAtomicFieldsQueryGzipSelfTest extends IgniteCacheAtomicFieldsQuerySelfTest {
     /** {@inheritDoc} */
-    @Override protected void beforeTest() throws Exception {
-        cleanPersistenceDir();
-
-        super.beforeTest();
-    }
-
-    /** {@inheritDoc} */
-    @Override protected void afterTest() throws Exception {
-        super.afterTest();
-
-        cleanPersistenceDir();
+    @Override protected Factory<CompressionSpi> compressionSpi() {
+        return new GzipCompressionSpi();
     }
 }

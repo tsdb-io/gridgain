@@ -70,14 +70,19 @@ import org.apache.ignite.internal.processors.cache.binary.GridCacheBinaryStoreBi
 import org.apache.ignite.internal.processors.cache.binary.GridCacheBinaryStoreObjectsSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.GridCacheClientNodeBinaryObjectMetadataMultinodeTest;
 import org.apache.ignite.internal.processors.cache.binary.GridCacheClientNodeBinaryObjectMetadataTest;
+import org.apache.ignite.internal.processors.cache.binary.distributed.dht.GridCacheBinaryObjectsAtomicGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.distributed.dht.GridCacheBinaryObjectsAtomicNearDisabledSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.distributed.dht.GridCacheBinaryObjectsAtomicSelfTest;
+import org.apache.ignite.internal.processors.cache.binary.distributed.dht.GridCacheBinaryObjectsPartitionedNearDisabledGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.distributed.dht.GridCacheBinaryObjectsPartitionedNearDisabledSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.distributed.dht.GridCacheBinaryObjectsPartitionedSelfTest;
+import org.apache.ignite.internal.processors.cache.binary.distributed.replicated.GridCacheBinaryObjectsReplicatedGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.distributed.replicated.GridCacheBinaryObjectsReplicatedSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.local.GridCacheBinaryObjectsAtomicLocalSelfTest;
+import org.apache.ignite.internal.processors.cache.binary.local.GridCacheBinaryObjectsGzipLocalSelfTest;
 import org.apache.ignite.internal.processors.cache.binary.local.GridCacheBinaryObjectsLocalSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.IgniteBinaryMetadataUpdateChangingTopologySelfTest;
+import org.apache.ignite.spi.compression.GzipCompressionMetricsTest;
 import org.apache.ignite.spi.compression.GzipCompressionSelfTest;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -135,15 +140,21 @@ import org.junit.runners.Suite;
     GridCacheBinaryObjectsLocalSelfTest.class,
     //GridCacheBinaryObjectsLocalOnheapSelfTest.class,
     GridCacheBinaryObjectsAtomicLocalSelfTest.class,
+    GridCacheBinaryObjectsGzipLocalSelfTest.class,
     GridCacheBinaryObjectsReplicatedSelfTest.class,
+    GridCacheBinaryObjectsReplicatedGzipSelfTest.class,
     GridCacheBinaryObjectsPartitionedSelfTest.class,
     GridCacheBinaryObjectsPartitionedNearDisabledSelfTest.class,
+    GridCacheBinaryObjectsPartitionedNearDisabledGzipSelfTest.class,
     //GridCacheBinaryObjectsPartitionedNearDisabledOnheapSelfTest.class,
     //GridCacheBinaryObjectsPartitionedOnheapSelfTest.class,
+    //GridCacheBinaryObjectsPartitionedOnheapGzipSelfTest.class,
     GridCacheBinaryObjectsAtomicSelfTest.class,
+    GridCacheBinaryObjectsAtomicGzipSelfTest.class,
     //GridCacheBinaryObjectsAtomicOnheapSelfTest.class,
     GridCacheBinaryObjectsAtomicNearDisabledSelfTest.class,
     //GridCacheBinaryObjectsAtomicNearDisabledOnheapSelfTest.class,
+    //GridCacheBinaryObjectsAtomicNearDisabledOnheapGzipSelfTest.class,
 
     GridCacheBinaryStoreObjectsSelfTest.class,
     GridCacheBinaryStoreBinariesDefaultMappersSelfTest.class,
@@ -167,6 +178,8 @@ import org.junit.runners.Suite;
     BinaryOffheapStreamByteOrderSelfTest.class,
 
     GridCacheBinaryObjectUserClassloaderSelfTest.class,
+
+    GzipCompressionMetricsTest.class,
 
     GzipCompressionSelfTest.class,
     BinaryMetadataMoveLegacyFolderTest.class

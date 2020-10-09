@@ -99,6 +99,7 @@ import org.apache.ignite.internal.processors.cache.IndexingCachePartitionLossPol
 import org.apache.ignite.internal.processors.cache.QueryEntityCaseMismatchTest;
 import org.apache.ignite.internal.processors.cache.SqlFieldsQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.authentication.SqlUserCommandSelfTest;
+import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheAtomicFieldsQueryGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheAtomicFieldsQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheAtomicNearEnabledFieldsQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheAtomicNearEnabledQuerySelfTest;
@@ -107,6 +108,7 @@ import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheD
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheDistributedPartitionQueryNodeRestartsSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheDistributedPartitionQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheDistributedQueryCancelSelfTest;
+import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCachePartitionedFieldsQueryGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCachePartitionedFieldsQueryP2PEnabledSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCachePartitionedFieldsQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCachePartitionedQueryEvtsDisabledSelfTest;
@@ -114,6 +116,7 @@ import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheP
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCachePartitionedQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCachePartitionedSnapshotEnabledQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.IgniteCacheQueryNoRebalanceSelfTest;
+import org.apache.ignite.internal.processors.cache.distributed.replicated.IgniteCacheReplicatedFieldsQueryGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.replicated.IgniteCacheReplicatedFieldsQueryJoinNoPrimaryPartitionsSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.replicated.IgniteCacheReplicatedFieldsQueryP2PEnabledSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.replicated.IgniteCacheReplicatedFieldsQueryROSelfTest;
@@ -139,11 +142,17 @@ import org.apache.ignite.internal.processors.cache.index.H2ConnectionLeaksSelfTe
 import org.apache.ignite.internal.processors.cache.index.H2DynamicColumnsClientBasicSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicColumnsServerBasicSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicColumnsServerCoordinatorBasicSelfTest;
+import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexAtomicPartitionedGzipNearSelfTest;
+import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexAtomicPartitionedGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexAtomicPartitionedNearSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexAtomicPartitionedSelfTest;
+import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexAtomicReplicatedGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexAtomicReplicatedSelfTest;
+import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexTransactionalPartitionedGzipNearSelfTest;
+import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexTransactionalPartitionedGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexTransactionalPartitionedNearSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexTransactionalPartitionedSelfTest;
+import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexTransactionalReplicatedGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexTransactionalReplicatedSelfTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexingComplexClientAtomicPartitionedNoBackupsTest;
 import org.apache.ignite.internal.processors.cache.index.H2DynamicIndexingComplexClientAtomicPartitionedTest;
@@ -170,6 +179,7 @@ import org.apache.ignite.internal.processors.cache.index.SchemaExchangeSelfTest;
 import org.apache.ignite.internal.processors.cache.index.SqlTransactionCommandsWithMvccDisabledSelfTest;
 import org.apache.ignite.internal.processors.cache.index.StopNodeOnRebuildIndexFailureTest;
 import org.apache.ignite.internal.processors.cache.local.IgniteCacheLocalAtomicQuerySelfTest;
+import org.apache.ignite.internal.processors.cache.local.IgniteCacheLocalFieldsQueryGzipSelfTest;
 import org.apache.ignite.internal.processors.cache.local.IgniteCacheLocalFieldsQuerySelfTest;
 import org.apache.ignite.internal.processors.cache.local.IgniteCacheLocalQueryCancelOrTimeoutSelfTest;
 import org.apache.ignite.internal.processors.cache.local.IgniteCacheLocalQuerySelfTest;
@@ -438,10 +448,16 @@ import org.junit.runners.Suite;
 
     // DDL.
     H2DynamicIndexTransactionalReplicatedSelfTest.class,
+    H2DynamicIndexTransactionalReplicatedGzipSelfTest.class,
     H2DynamicIndexTransactionalPartitionedSelfTest.class,
+    H2DynamicIndexTransactionalPartitionedGzipSelfTest.class,
+    H2DynamicIndexTransactionalPartitionedGzipNearSelfTest.class,
     H2DynamicIndexTransactionalPartitionedNearSelfTest.class,
     H2DynamicIndexAtomicReplicatedSelfTest.class,
+    H2DynamicIndexAtomicReplicatedGzipSelfTest.class,
     H2DynamicIndexAtomicPartitionedSelfTest.class,
+    H2DynamicIndexAtomicPartitionedGzipSelfTest.class,
+    H2DynamicIndexAtomicPartitionedGzipNearSelfTest.class,
     H2DynamicIndexAtomicPartitionedNearSelfTest.class,
     H2DynamicTableSelfTest.class,
     H2DynamicColumnsClientBasicSelfTest.class,
@@ -467,12 +483,16 @@ import org.junit.runners.Suite;
     // Fields queries.
     SqlFieldsQuerySelfTest.class,
     IgniteCacheLocalFieldsQuerySelfTest.class,
+    IgniteCacheLocalFieldsQueryGzipSelfTest.class,
     IgniteCacheReplicatedFieldsQuerySelfTest.class,
+    IgniteCacheReplicatedFieldsQueryGzipSelfTest.class,
     IgniteCacheReplicatedFieldsQueryROSelfTest.class,
     IgniteCacheReplicatedFieldsQueryP2PEnabledSelfTest.class,
     IgniteCacheReplicatedFieldsQueryJoinNoPrimaryPartitionsSelfTest.class,
     IgniteCachePartitionedFieldsQuerySelfTest.class,
+    IgniteCachePartitionedFieldsQueryGzipSelfTest.class,
     IgniteCacheAtomicFieldsQuerySelfTest.class,
+    IgniteCacheAtomicFieldsQueryGzipSelfTest.class,
     IgniteCacheAtomicNearEnabledFieldsQuerySelfTest.class,
     IgniteCachePartitionedFieldsQueryP2PEnabledSelfTest.class,
     IgniteCacheFieldsQueryNoDataSelfTest.class,

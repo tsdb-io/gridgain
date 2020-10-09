@@ -63,7 +63,9 @@ import org.apache.ignite.jdbc.thin.JdbcThinDiskSpillingClientsTest;
 import org.apache.ignite.jdbc.thin.JdbcThinDistributedJoinsSelfTest;
 import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexAtomicPartitionedNearSelfTest;
 import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexAtomicPartitionedSelfTest;
+import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexAtomicReplicatedGzipSelfTest;
 import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexAtomicReplicatedSelfTest;
+import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexTransactionalPartitionedNearGzipSelfTest;
 import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexTransactionalPartitionedNearSelfTest;
 import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexTransactionalPartitionedSelfTest;
 import org.apache.ignite.jdbc.thin.JdbcThinDynamicIndexTransactionalReplicatedSelfTest;
@@ -172,11 +174,13 @@ import org.junit.runners.Suite;
     JdbcQueryQuotaTest.class,
 
     // DDL tests.
+    org.apache.ignite.internal.jdbc2.JdbcDynamicIndexAtomicPartitionedGzipSelfTest.class,
     org.apache.ignite.internal.jdbc2.JdbcDynamicIndexAtomicPartitionedNearSelfTest.class,
     org.apache.ignite.internal.jdbc2.JdbcDynamicIndexAtomicPartitionedSelfTest.class,
     org.apache.ignite.internal.jdbc2.JdbcDynamicIndexAtomicReplicatedSelfTest.class,
     org.apache.ignite.internal.jdbc2.JdbcDynamicIndexTransactionalPartitionedNearSelfTest.class,
     org.apache.ignite.internal.jdbc2.JdbcDynamicIndexTransactionalPartitionedSelfTest.class,
+    org.apache.ignite.internal.jdbc2.JdbcDynamicIndexTransactionalReplicatedGzipSelfTest.class,
     org.apache.ignite.internal.jdbc2.JdbcDynamicIndexTransactionalReplicatedSelfTest.class,
 
     // New thin JDBC
@@ -222,7 +226,9 @@ import org.junit.runners.Suite;
     JdbcThinDynamicIndexAtomicPartitionedNearSelfTest.class,
     JdbcThinDynamicIndexAtomicPartitionedSelfTest.class,
     JdbcThinDynamicIndexAtomicReplicatedSelfTest.class,
+    JdbcThinDynamicIndexAtomicReplicatedGzipSelfTest.class,
     JdbcThinDynamicIndexTransactionalPartitionedNearSelfTest.class,
+    JdbcThinDynamicIndexTransactionalPartitionedNearGzipSelfTest.class,
     JdbcThinDynamicIndexTransactionalPartitionedSelfTest.class,
     JdbcThinDynamicIndexTransactionalReplicatedSelfTest.class,
     JdbcThinMultiStatementSelfTest.class,

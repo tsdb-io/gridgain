@@ -35,4 +35,9 @@ public class JdbcThinDynamicIndexTransactionalReplicatedSelfTest extends JdbcThi
     @Override protected boolean nearCache() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean compression() {
+        return false;
+    }
 }

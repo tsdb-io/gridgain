@@ -109,7 +109,7 @@ public class PageEvictionReadThroughTest extends PageEvictionAbstractTest {
         startGrid(0);
 
         CacheConfiguration<Object, Object> cfg = cacheConfig("evict-rebalance", null, cacheMode, atomicityMode,
-            CacheWriteSynchronizationMode.PRIMARY_SYNC);
+            CacheWriteSynchronizationMode.PRIMARY_SYNC, true);
         cfg.setReadThrough(true);
         cfg.setCacheStoreFactory(new TestStoreFactory());
 

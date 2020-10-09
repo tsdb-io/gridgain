@@ -48,6 +48,7 @@ import org.apache.ignite.internal.util.typedef.X;
 import org.apache.ignite.internal.util.typedef.internal.U;
 import org.apache.ignite.lang.IgnitePredicate;
 import org.apache.ignite.spi.communication.tcp.TcpCommunicationSpi;
+import org.apache.ignite.spi.compression.CompressionSpi;
 import org.apache.ignite.spi.discovery.tcp.TcpDiscoverySpi;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.TcpDiscoveryIpFinder;
 import org.apache.ignite.spi.discovery.tcp.ipfinder.vm.TcpDiscoveryVmIpFinder;
@@ -249,6 +250,7 @@ public abstract class GridCacheAbstractSelfTest extends GridCommonAbstractTest {
         cfg.setAtomicityMode(atomicityMode());
         cfg.setWriteSynchronizationMode(writeSynchronization());
         cfg.setNearConfiguration(nearConfiguration());
+        cfg.setCompressionSpi(compressionSpi());
         cfg.setOnheapCacheEnabled(onheapCacheEnabled());
 
         Class<?>[] idxTypes = indexedTypes();
@@ -284,10 +286,17 @@ public abstract class GridCacheAbstractSelfTest extends GridCommonAbstractTest {
     }
 
     /**
-     * @return Partitioned mode.
+     * @return Near cache configuration.
      */
     protected NearCacheConfiguration nearConfiguration() {
         return new NearCacheConfiguration();
+    }
+
+    /**
+     * @return Compression SPI or {@code null} if none is needed.
+     */
+    protected Factory<CompressionSpi> compressionSpi() {
+        return null;
     }
 
     /**

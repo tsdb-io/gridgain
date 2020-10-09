@@ -35,4 +35,9 @@ public class H2DynamicIndexAtomicReplicatedSelfTest extends H2DynamicIndexAbstra
     @Override protected boolean nearCache() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean gzip() {
+        return false;
+    }
 }

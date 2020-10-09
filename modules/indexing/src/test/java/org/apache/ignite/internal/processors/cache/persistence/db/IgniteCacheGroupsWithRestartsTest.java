@@ -51,6 +51,7 @@ import org.apache.ignite.internal.visor.cache.VisorFindAndDeleteGarbageInPersist
 import org.apache.ignite.internal.visor.cache.VisorFindAndDeleteGarbageInPersistenceTask;
 import org.apache.ignite.internal.visor.cache.VisorFindAndDeleteGarbageInPersistenceTaskArg;
 import org.apache.ignite.internal.visor.cache.VisorFindAndDeleteGarbageInPersistenceTaskResult;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 import org.apache.ignite.testframework.junits.WithSystemProperty;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 import org.junit.Assert;
@@ -127,7 +128,8 @@ public class IgniteCacheGroupsWithRestartsTest extends GridCommonAbstractTest {
                     .setFields(fields)
                     .setIndexes(indices)
             ))
-            .setAffinity(new RendezvousAffinityFunction(false, 64));
+            .setAffinity(new RendezvousAffinityFunction(false, 64))
+            .setCompressionSpi(new GzipCompressionSpi());
 
         return ccfg;
     }

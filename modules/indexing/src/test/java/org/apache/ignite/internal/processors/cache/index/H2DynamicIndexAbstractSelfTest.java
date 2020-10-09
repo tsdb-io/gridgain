@@ -33,6 +33,7 @@ import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.apache.ignite.internal.processors.cache.query.IgniteQueryErrorCode;
 import org.apache.ignite.internal.util.typedef.F;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 import org.junit.Test;
 
 /**
@@ -337,6 +338,12 @@ public abstract class H2DynamicIndexAbstractSelfTest extends AbstractSchemaSelfT
         if (nearCache())
             ccfg.setNearConfiguration(new NearCacheConfiguration<KeyClass, ValueClass>());
 
+        if (gzip()) {
+            ccfg.setCompressKeys(true);
+
+            ccfg.setCompressionSpi(new GzipCompressionSpi());
+        }
+
         return ccfg;
     }
 
@@ -354,4 +361,9 @@ public abstract class H2DynamicIndexAbstractSelfTest extends AbstractSchemaSelfT
      * @return Whether to use near cache.
      */
     protected abstract boolean nearCache();
+
+    /**
+     * @return Whether to use record compression.
+     */
+    protected abstract boolean gzip();
 }

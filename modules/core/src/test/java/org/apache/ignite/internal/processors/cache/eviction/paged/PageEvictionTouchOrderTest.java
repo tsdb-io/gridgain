@@ -112,7 +112,7 @@ public class PageEvictionTouchOrderTest extends PageEvictionAbstractTest {
         startGrid(0);
 
         CacheConfiguration<Object, Object> cfg = cacheConfig("evict-fair", null, cacheMode, atomicityMode,
-            CacheWriteSynchronizationMode.PRIMARY_SYNC);
+            CacheWriteSynchronizationMode.PRIMARY_SYNC, false);
 
         IgniteCache<Object, Object> cache = ignite(0).getOrCreateCache(cfg);
 

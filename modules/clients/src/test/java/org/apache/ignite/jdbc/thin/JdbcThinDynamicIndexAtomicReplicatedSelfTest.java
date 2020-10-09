@@ -35,4 +35,9 @@ public class JdbcThinDynamicIndexAtomicReplicatedSelfTest extends JdbcThinDynami
     @Override protected boolean nearCache() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean compression() {
+        return false;
+    }
 }

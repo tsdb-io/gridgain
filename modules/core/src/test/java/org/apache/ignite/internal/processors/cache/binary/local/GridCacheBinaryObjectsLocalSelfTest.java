@@ -44,6 +44,11 @@ public class GridCacheBinaryObjectsLocalSelfTest extends GridCacheBinaryObjectsA
     }
 
     /** {@inheritDoc} */
+    @Override protected boolean compressionEnabled() {
+        return false;
+    }
+
+    /** {@inheritDoc} */
     @Override protected int gridCount() {
         return 1;
     }

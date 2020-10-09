@@ -25,6 +25,7 @@ import org.apache.ignite.configuration.DataRegionConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.configuration.DataStorageConfiguration;
 import org.apache.ignite.configuration.NearCacheConfiguration;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 import org.jetbrains.annotations.NotNull;
 
@@ -100,10 +101,11 @@ public class PageEvictionAbstractTest extends GridCommonAbstractTest {
 
     /**
      * @param name Name.
+     * @param memoryPlcName Memory policy name.
      * @param cacheMode Cache mode.
      * @param atomicityMode Atomicity mode.
      * @param writeSynchronizationMode Write synchronization mode.
-     * @param memoryPlcName Memory policy name.
+     * @param compress Compression enabled flag.
      * @return Cache configuration.
      */
     protected CacheConfiguration<Object, Object> cacheConfig(
@@ -111,15 +113,17 @@ public class PageEvictionAbstractTest extends GridCommonAbstractTest {
         String memoryPlcName,
         CacheMode cacheMode,
         CacheAtomicityMode atomicityMode,
-        CacheWriteSynchronizationMode writeSynchronizationMode
-    ) {
+        CacheWriteSynchronizationMode writeSynchronizationMode,
+        boolean compress) {
         CacheConfiguration<Object, Object> cacheConfiguration = new CacheConfiguration<>(DEFAULT_CACHE_NAME)
             .setName(name)
             .setAffinity(new RendezvousAffinityFunction(false, 32))
             .setCacheMode(cacheMode)
             .setAtomicityMode(atomicityMode)
             .setDataRegionName(memoryPlcName)
-            .setWriteSynchronizationMode(writeSynchronizationMode);
+            .setWriteSynchronizationMode(writeSynchronizationMode)
+            .setCompressionSpi(compress ? new GzipCompressionSpi() : null)
+            .setCompressKeys(compress ? true : false);
 
         if (cacheMode == CacheMode.PARTITIONED)
             cacheConfiguration.setBackups(1);

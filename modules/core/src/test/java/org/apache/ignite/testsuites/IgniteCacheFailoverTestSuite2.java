@@ -26,6 +26,7 @@ import org.apache.ignite.internal.processors.cache.distributed.dht.IgniteCacheCr
 import org.apache.ignite.internal.processors.cache.distributed.dht.atomic.GridCacheAtomicFailoverSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.dht.atomic.GridCacheAtomicReplicatedFailoverSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.near.GridCachePartitionedFailoverSelfTest;
+import org.apache.ignite.internal.processors.cache.distributed.near.GridCachePartitionedGzipFailoverSelfTest;
 import org.apache.ignite.internal.processors.cache.distributed.replicated.GridCacheReplicatedFailoverSelfTest;
 import org.apache.ignite.internal.processors.cache.persistence.baseline.IgniteChangingBaselineDownCachePutAllFailoverTest;
 import org.apache.ignite.internal.processors.cache.persistence.baseline.IgniteChangingBaselineUpCachePutAllFailoverTest;
@@ -41,6 +42,7 @@ import org.junit.runners.Suite;
     GridCacheAtomicReplicatedFailoverSelfTest.class,
 
     GridCachePartitionedFailoverSelfTest.class,
+    GridCachePartitionedGzipFailoverSelfTest.class,
     GridCacheColocatedFailoverSelfTest.class,
     GridCacheReplicatedFailoverSelfTest.class,
 

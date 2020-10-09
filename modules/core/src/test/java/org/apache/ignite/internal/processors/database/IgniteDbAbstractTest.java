@@ -28,6 +28,7 @@ import org.apache.ignite.configuration.WALMode;
 import org.apache.ignite.internal.cluster.IgniteClusterEx;
 import org.apache.ignite.internal.processors.cache.persistence.tree.BPlusTree;
 import org.apache.ignite.internal.util.typedef.internal.S;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 
 import static org.apache.ignite.cache.CacheAtomicityMode.ATOMIC;
@@ -48,6 +49,11 @@ public abstract class IgniteDbAbstractTest extends GridCommonAbstractTest {
      * @return {@code True} if indexing is enabled.
      */
     protected abstract boolean indexingEnabled();
+
+    /**
+     * @return {@code True} if compression is enabled.
+     */
+    protected abstract boolean compressionEnabled();
 
     /** */
     protected boolean client;
@@ -84,6 +90,9 @@ public abstract class IgniteDbAbstractTest extends GridCommonAbstractTest {
         if (indexingEnabled())
             ccfg.setIndexedTypes(Integer.class, DbValue.class);
 
+        if (compressionEnabled())
+            ccfg.setCompressionSpi(new GzipCompressionSpi());
+
         ccfg.setAtomicityMode(TRANSACTIONAL);
         ccfg.setWriteSynchronizationMode(FULL_SYNC);
         ccfg.setRebalanceMode(SYNC);
@@ -93,6 +102,9 @@ public abstract class IgniteDbAbstractTest extends GridCommonAbstractTest {
 
         if (indexingEnabled())
             ccfg2.setIndexedTypes(DbKey.class, DbValue.class);
+
+        if (compressionEnabled())
+            ccfg2.setCompressionSpi(new GzipCompressionSpi());
 
         ccfg2.setAtomicityMode(TRANSACTIONAL);
         ccfg2.setWriteSynchronizationMode(FULL_SYNC);
@@ -104,12 +116,18 @@ public abstract class IgniteDbAbstractTest extends GridCommonAbstractTest {
         if (indexingEnabled())
             ccfg3.setIndexedTypes(Integer.class, LargeDbValue.class);
 
+        if (compressionEnabled())
+            ccfg3.setCompressionSpi(new GzipCompressionSpi());
+
         ccfg3.setAtomicityMode(TRANSACTIONAL);
         ccfg3.setWriteSynchronizationMode(FULL_SYNC);
         ccfg3.setRebalanceMode(SYNC);
         ccfg3.setAffinity(new RendezvousAffinityFunction(false, 32));
 
         CacheConfiguration ccfg4 = new CacheConfiguration("tiny");
+
+        if (compressionEnabled())
+            ccfg4.setCompressionSpi(new GzipCompressionSpi());
 
         ccfg4.setAtomicityMode(TRANSACTIONAL);
         ccfg4.setWriteSynchronizationMode(FULL_SYNC);
@@ -120,6 +138,12 @@ public abstract class IgniteDbAbstractTest extends GridCommonAbstractTest {
 
         if (indexingEnabled())
             ccfg5.setIndexedTypes(DbKey.class, DbValue.class);
+
+        if (compressionEnabled()) {
+            ccfg5.setCompressionSpi(new GzipCompressionSpi());
+
+            ccfg5.setCompressKeys(true);
+        }
 
         ccfg5.setAtomicityMode(ATOMIC);
         ccfg5.setWriteSynchronizationMode(FULL_SYNC);

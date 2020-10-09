@@ -35,4 +35,9 @@ public class H2DynamicIndexTransactionalReplicatedSelfTest extends H2DynamicInde
     @Override protected boolean nearCache() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean gzip() {
+        return false;
+    }
 }

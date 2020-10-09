@@ -27,6 +27,7 @@ import org.apache.ignite.internal.processors.cache.query.continuous.CacheContinu
 import org.apache.ignite.internal.processors.cache.query.continuous.CacheContinuousQueryRandomOperationsTest;
 import org.apache.ignite.internal.processors.cache.query.continuous.CacheContinuousWithTransformerPartitionedSelfTest;
 import org.apache.ignite.internal.processors.cache.query.continuous.CacheContinuousWithTransformerRandomOperationsTest;
+import org.apache.ignite.internal.processors.cache.query.continuous.CacheKeepBinaryIterationGzipEnabledTest;
 import org.apache.ignite.internal.processors.cache.query.continuous.CacheKeepBinaryIterationNearEnabledTest;
 import org.apache.ignite.internal.processors.cache.query.continuous.CacheKeepBinaryIterationStoreEnabledTest;
 import org.apache.ignite.internal.processors.cache.query.continuous.CacheKeepBinaryIterationTest;
@@ -60,6 +61,7 @@ import org.junit.runners.Suite;
     GridCacheContinuousQueryMultiNodesFilteringTest.class,
     CacheKeepBinaryIterationStoreEnabledTest.class,
     CacheKeepBinaryIterationNearEnabledTest.class,
+    CacheKeepBinaryIterationGzipEnabledTest.class,
     GridCacheContinuousQueryPartitionedOnlySelfTest.class,
     CacheContinuousQueryOperationP2PTest.class,
     CacheContinuousBatchAckTest.class,

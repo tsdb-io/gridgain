@@ -16,7 +16,6 @@
 
 package org.apache.ignite.internal.processors.cache;
 
-import com.google.common.collect.ImmutableMap;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -31,6 +30,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 import javax.cache.CacheException;
+import javax.cache.configuration.Factory;
+import com.google.common.collect.ImmutableMap;
 import org.apache.ignite.IgniteCache;
 import org.apache.ignite.cache.CacheAtomicityMode;
 import org.apache.ignite.cache.CacheMode;
@@ -45,9 +46,9 @@ import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.internal.IgniteKernal;
 import org.apache.ignite.internal.binary.BinaryMarshaller;
+import org.apache.ignite.internal.processors.cache.persistence.tree.BPlusTree;
 import org.apache.ignite.internal.processors.cache.query.GridCacheSqlIndexMetadata;
 import org.apache.ignite.internal.processors.cache.query.GridCacheSqlMetadata;
-import org.apache.ignite.internal.processors.cache.persistence.tree.BPlusTree;
 import org.apache.ignite.internal.processors.datastructures.GridCacheAtomicLongValue;
 import org.apache.ignite.internal.processors.datastructures.GridCacheInternalKeyImpl;
 import org.apache.ignite.internal.processors.query.GridQueryFieldMetadata;
@@ -55,6 +56,7 @@ import org.apache.ignite.internal.processors.query.GridQueryProcessor;
 import org.apache.ignite.internal.processors.query.h2.sql.GridSqlQuerySplitter;
 import org.apache.ignite.internal.util.typedef.F;
 import org.apache.ignite.internal.util.typedef.X;
+import org.apache.ignite.spi.compression.CompressionSpi;
 import org.apache.ignite.testframework.GridTestUtils;
 import org.apache.ignite.testframework.junits.common.GridCommonAbstractTest;
 import org.junit.Test;
@@ -110,6 +112,7 @@ public abstract class IgniteCacheAbstractFieldsQuerySelfTest extends GridCommonA
 
         ccfg.setCacheMode(cacheMode());
         ccfg.setAtomicityMode(atomicityMode());
+        ccfg.setCompressionSpi(compressionSpi());
         ccfg.setWriteSynchronizationMode(CacheWriteSynchronizationMode.FULL_SYNC);
         ccfg.setRebalanceMode(CacheRebalanceMode.SYNC);
 
@@ -198,6 +201,11 @@ public abstract class IgniteCacheAbstractFieldsQuerySelfTest extends GridCommonA
     /** @return Cache atomicity mode. */
     protected CacheAtomicityMode atomicityMode() {
         return TRANSACTIONAL;
+    }
+
+    /** @return Binary object compression implementation. */
+    protected Factory<CompressionSpi> compressionSpi() {
+        return null;
     }
 
     /** @return Number of grids to start. */

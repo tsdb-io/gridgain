@@ -30,6 +30,7 @@ import org.apache.ignite.cache.query.SqlFieldsQuery;
 import org.apache.ignite.configuration.CacheConfiguration;
 import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.apache.ignite.internal.util.typedef.F;
+import org.apache.ignite.spi.compression.gzip.GzipCompressionSpi;
 import org.apache.ignite.testframework.GridTestUtils.RunnableX;
 import org.junit.Test;
 
@@ -92,6 +93,9 @@ public abstract class JdbcDynamicIndexAbstractSelfTest extends JdbcAbstractDmlSt
         if (nearCache())
             ccfg.setNearConfiguration(new NearCacheConfiguration());
 
+        if (compression())
+            ccfg.setCompressionSpi(new GzipCompressionSpi());
+
         return ccfg;
     }
 
@@ -109,6 +113,11 @@ public abstract class JdbcDynamicIndexAbstractSelfTest extends JdbcAbstractDmlSt
      * @return Whether to use near cache.
      */
     protected abstract boolean nearCache();
+
+    /**
+     * @return Whether to use binary object compression.
+     */
+    protected abstract boolean compression();
 
     /**
      * Execute given SQL statement.

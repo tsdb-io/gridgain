@@ -36,4 +36,9 @@ public class IgnitePdsClientNearCachePutGetTest extends IgniteDbPutGetAbstractTe
     @Override protected boolean withClientNearCache() {
         return true;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean compressionEnabled() {
+        return false;
+    }
 }

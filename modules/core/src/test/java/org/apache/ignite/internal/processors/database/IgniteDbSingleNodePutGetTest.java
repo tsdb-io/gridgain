@@ -29,4 +29,9 @@ public class IgniteDbSingleNodePutGetTest extends IgniteDbPutGetAbstractTest {
     @Override protected boolean indexingEnabled() {
         return false;
     }
+
+    /** {@inheritDoc} */
+    @Override protected boolean compressionEnabled() {
+        return false;
+    }
 }
