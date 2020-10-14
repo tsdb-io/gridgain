@@ -100,10 +100,10 @@ public class PageEvictionAbstractTest extends GridCommonAbstractTest {
 
     /**
      * @param name Name.
+     * @param memoryPlcName Memory policy name.
      * @param cacheMode Cache mode.
      * @param atomicityMode Atomicity mode.
      * @param writeSynchronizationMode Write synchronization mode.
-     * @param memoryPlcName Memory policy name.
      * @return Cache configuration.
      */
     protected CacheConfiguration<Object, Object> cacheConfig(

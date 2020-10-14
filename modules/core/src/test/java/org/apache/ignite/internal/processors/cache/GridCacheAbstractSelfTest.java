@@ -35,6 +35,7 @@ import org.apache.ignite.cache.CachePeekMode;
 import org.apache.ignite.cache.CacheWriteSynchronizationMode;
 import org.apache.ignite.cache.store.CacheStore;
 import org.apache.ignite.configuration.CacheConfiguration;
+import org.apache.ignite.configuration.EntryCompressionConfiguration;
 import org.apache.ignite.configuration.IgniteConfiguration;
 import org.apache.ignite.configuration.NearCacheConfiguration;
 import org.apache.ignite.internal.IgniteKernal;
@@ -284,10 +285,17 @@ public abstract class GridCacheAbstractSelfTest extends GridCommonAbstractTest {
     }
 
     /**
-     * @return Partitioned mode.
+     * @return Near cache configuration.
      */
     protected NearCacheConfiguration nearConfiguration() {
         return new NearCacheConfiguration();
+    }
+
+    /**
+     * @return Compression SPI or {@code null} if none is needed.
+     */
+    protected Factory<EntryCompressionConfiguration> compressionSpi() {
+        return null;
     }
 
     /**

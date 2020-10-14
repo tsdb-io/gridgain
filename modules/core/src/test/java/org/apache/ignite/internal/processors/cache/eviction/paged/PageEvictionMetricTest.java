@@ -46,7 +46,15 @@ public class PageEvictionMetricTest extends PageEvictionAbstractTest {
      */
     @Test
     public void testPageEvictionMetric() throws Exception {
-        checkPageEvictionMetric(CacheAtomicityMode.ATOMIC);
+        checkPageEvictionMetric(CacheAtomicityMode.ATOMIC, false);
+    }
+
+    /**
+     * @throws Exception If failed.
+     */
+    @Test
+    public void testPageEvictionMetricGzip() throws Exception {
+        checkPageEvictionMetric(CacheAtomicityMode.ATOMIC, true);
     }
 
     /**
@@ -55,13 +63,13 @@ public class PageEvictionMetricTest extends PageEvictionAbstractTest {
     @Ignore("https://issues.apache.org/jira/browse/IGNITE-10738")
     @Test
     public void testPageEvictionMetricMvcc() throws Exception {
-        checkPageEvictionMetric(CacheAtomicityMode.TRANSACTIONAL_SNAPSHOT);
+        checkPageEvictionMetric(CacheAtomicityMode.TRANSACTIONAL_SNAPSHOT, true);
     }
 
     /**
      * @throws Exception If failed.
      */
-    private void checkPageEvictionMetric(CacheAtomicityMode atomicityMode) throws Exception {
+    private void checkPageEvictionMetric(CacheAtomicityMode atomicityMode, boolean compress) throws Exception {
         IgniteEx ignite = startGrid(0);
 
         DataRegionMetricsImpl metrics =

@@ -147,6 +147,8 @@ public abstract class GridCacheBinaryObjectsAbstractSelfTest extends GridCommonA
         cacheCfg.setBackups(1);
         cacheCfg.setOnheapCacheEnabled(false);
 
+        enableCompression(cacheCfg);
+
         return cacheCfg;
     }
 
@@ -194,6 +196,15 @@ public abstract class GridCacheBinaryObjectsAbstractSelfTest extends GridCommonA
      * @return Distribution mode.
      */
     protected abstract NearCacheConfiguration nearConfiguration();
+
+    /**
+     * Enables cache entry compression, is needed.
+     *
+     * @param ccfg Cache configuration.
+     */
+    protected void enableCompression(CacheConfiguration ccfg) {
+        // No-op.
+    }
 
     /**
      * @return Grid count.
