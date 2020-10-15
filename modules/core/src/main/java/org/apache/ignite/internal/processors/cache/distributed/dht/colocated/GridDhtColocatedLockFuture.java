@@ -803,7 +803,7 @@ public final class GridDhtColocatedLockFuture extends GridCacheCompoundIdentityF
 
                 GridDhtTopologyFuture lastFinishedFut = cctx.shared().exchange().lastFinishedFuture();
 
-                if (lastFinishedFut.exchangeDone() && lastFinishedFut.topologyVersion().equals(lastChangeVer)) {
+//                if (lastFinishedFut.exchangeDone() && lastFinishedFut.topologyVersion().equals(lastChangeVer)) {
 //                    System.out.println("!qevkj1");
 
                     Throwable err = lastFinishedFut.validateCache(cctx, recovery, read, null, keys);
@@ -815,12 +815,12 @@ public final class GridDhtColocatedLockFuture extends GridCacheCompoundIdentityF
 
                         return;
                     }
-                }
-                else {
+//                }
+//                else {
 //                    System.out.println("!iterate_over");
-                    for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
-                        if (fut.exchangeDone() && fut.topologyVersion().equals(lastChangeVer)) {
-                            throw new RuntimeException("MyException");
+//                    for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
+//                        if (fut.exchangeDone() && fut.topologyVersion().equals(lastChangeVer)) {
+//                            throw new RuntimeException("MyException");
 //                            System.out.println("!qevkj3");
 
 //                            Throwable err = fut.validateCache(cctx, recovery, read, null, keys);
@@ -834,9 +834,9 @@ public final class GridDhtColocatedLockFuture extends GridCacheCompoundIdentityF
 //                            }
 
 //                            break;
-                        }
-                    }
-                }
+//                        }
+//                    }
+//                }
 
                 // Continue mapping on the same topology version as it was before.
                 synchronized (this) {
