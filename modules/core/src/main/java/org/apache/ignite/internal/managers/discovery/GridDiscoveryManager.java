@@ -655,8 +655,9 @@ public class GridDiscoveryManager extends GridManagerAdapter<DiscoverySpi> {
                                 }
 
                                 if (!awaited)
-                                    log.warning("Timeout was reached while processing ChangeGlobalStateFinishMessage " +
-                                        "before ChangeGlobalStateMessage was processed.");
+                                    throw new RuntimeException("MyException");
+//                                    log.warning("Timeout was reached while processing ChangeGlobalStateFinishMessage " +
+//                                        "before ChangeGlobalStateMessage was processed.");
 
                                 changeStatesInProgress.remove(reqId);
                             }
