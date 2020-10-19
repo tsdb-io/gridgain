@@ -211,20 +211,26 @@ public abstract class GridNearTxAbstractEnlistFuture<T> extends GridCacheCompoun
             topVer = tx.topologyVersionSnapshot();
 
         if (topVer != null) {
-            for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
-                if (fut.exchangeDone() && fut.topologyVersion().equals(topVer)) {
+
+            GridDhtTopologyFuture lastFinishedFut = cctx.shared().exchange().lastFinishedFuture();
+
+            assert lastFinishedFut.topologyVersion().equals(topVer) :
+                    "Topology version of last exchange future and last affinity changed topology version are not equals";
+
+//            for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
+//                if (fut.exchangeDone() && fut.topologyVersion().equals(topVer)) {
                     Throwable err = null;
 
                     // Before cache validation, make sure that this topology future is already completed.
                     try {
-                        fut.get();
+                        lastFinishedFut.get();
                     }
                     catch (IgniteCheckedException e) {
-                        err = fut.error();
+                        err = lastFinishedFut.error();
                     }
 
                     if (err == null)
-                        err = fut.validateCache(cctx, false, false, null, null);
+                        err = lastFinishedFut.validateCache(cctx, false, false, null, null);
 
                     if (err != null) {
                         onDone(err);
@@ -232,9 +238,9 @@ public abstract class GridNearTxAbstractEnlistFuture<T> extends GridCacheCompoun
                         return;
                     }
 
-                    break;
-                }
-            }
+//                    break;
+//                }
+//            }
 
             if (this.topVer == null)
                 this.topVer = topVer;

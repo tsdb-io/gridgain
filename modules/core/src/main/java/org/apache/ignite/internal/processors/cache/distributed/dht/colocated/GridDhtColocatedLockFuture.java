@@ -803,6 +803,9 @@ public final class GridDhtColocatedLockFuture extends GridCacheCompoundIdentityF
 
                 GridDhtTopologyFuture lastFinishedFut = cctx.shared().exchange().lastFinishedFuture();
 
+                assert lastFinishedFut.topologyVersion().equals(lastChangeVer) :
+                        "Topology version of last exchange future and last affinity changed topology version are not equals";
+
 //                if (lastFinishedFut.exchangeDone() && lastFinishedFut.topologyVersion().equals(lastChangeVer)) {
 //                    System.out.println("!qevkj1");
 

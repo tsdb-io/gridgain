@@ -845,19 +845,25 @@ public final class GridNearLockFuture extends GridCacheCompoundIdentityFuture<Bo
             topVer = tx.topologyVersionSnapshot();
 
         if (topVer != null) {
-            for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
-                if (fut.exchangeDone() && fut.topologyVersion().equals(topVer)) {
+
+            GridDhtTopologyFuture lastFinishedFut = cctx.shared().exchange().lastFinishedFuture();
+
+            assert lastFinishedFut.topologyVersion().equals(topVer) :
+                    "Topology version of last exchange future and last affinity changed topology version are not equals";
+
+//            for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
+//                if (fut.exchangeDone() && fut.topologyVersion().equals(topVer)) {
                     Throwable err = null;
 
                     // Before cache validation, make sure that this topology future is already completed.
                     try {
-                        fut.get();
+                        lastFinishedFut.get();
                     }
                     catch (IgniteCheckedException e) {
-                        err = fut.error();
+                        err = lastFinishedFut.error();
                     }
 
-                    err = (err == null) ? fut.validateCache(cctx, recovery, read, null, keys) : err;
+                    err = (err == null) ? lastFinishedFut.validateCache(cctx, recovery, read, null, keys) : err;
 
                     if (err != null) {
                         onDone(err);
@@ -865,9 +871,9 @@ public final class GridNearLockFuture extends GridCacheCompoundIdentityFuture<Bo
                         return;
                     }
 
-                    break;
-                }
-            }
+//                    break;
+//                }
+//            }
 
             // Continue mapping on the same topology version as it was before.
             if (this.topVer == null)
