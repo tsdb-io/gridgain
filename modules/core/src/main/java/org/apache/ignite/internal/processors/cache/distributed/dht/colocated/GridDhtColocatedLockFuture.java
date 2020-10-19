@@ -801,47 +801,47 @@ public final class GridDhtColocatedLockFuture extends GridCacheCompoundIdentityF
                     }
                 }
 
-//                GridDhtTopologyFuture lastFinishedFut = cctx.shared().exchange().lastFinishedFuture();
-//
-//                assert lastFinishedFut.topologyVersion().equals(lastChangeVer) :
+                GridDhtTopologyFuture lastFinishedFut = cctx.shared().exchange().lastFinishedFuture();
+
+                assert cctx.shared().exchange().lastAffinityChangedTopologyVersion(lastFinishedFut.topologyVersion()).equals(lastChangeVer) :
 //                        "Topology version of last exchange future and last affinity changed topology version are not equals";
-//                        "lastChangeVer: " + lastChangeVer +
-//                                "\nlastFinishedFuture: " + lastFinishedFut +
-//                                "\nlastTopologyFuture: " + cctx.shared().exchange().lastTopologyFuture();
-//
+                        "lastChangeVer: " + lastChangeVer +
+                                "\nlastFinishedFuture: " + lastFinishedFut +
+                                "\nlastTopologyFuture: " + cctx.shared().exchange().lastTopologyFuture();
+
 //                if (lastFinishedFut.exchangeDone() && lastFinishedFut.topologyVersion().equals(lastChangeVer)) {
-//                    System.out.println("!qevkj1");
-//
-//                    Throwable err = lastFinishedFut.validateCache(cctx, recovery, read, null, keys);
-//
-//                    if (err != null) {
+                    System.out.println("!qevkj1");
+
+                    Throwable err = lastFinishedFut.validateCache(cctx, recovery, read, null, keys);
+
+                    if (err != null) {
 //                        System.out.println("!qevkj2");
-//
-//                        onDone(err);
-//
-//                        return;
-//                    }
+
+                        onDone(err);
+
+                        return;
+                    }
 //                }
 //                else {
 //                    System.out.println("!iterate_over");
-                    for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
-                        if (fut.exchangeDone() && fut.topologyVersion().equals(lastChangeVer)) {
+//                    for (GridDhtTopologyFuture fut : cctx.shared().exchange().exchangeFutures()) {
+//                        if (fut.exchangeDone() && fut.topologyVersion().equals(lastChangeVer)) {
 //                            throw new RuntimeException("MyException");
 //                            System.out.println("!qevkj3");
 
-                            Throwable err = fut.validateCache(cctx, recovery, read, null, keys);
+//                            Throwable err = fut.validateCache(cctx, recovery, read, null, keys);
 
-                            if (err != null) {
+//                            if (err != null) {
 //                                System.out.println("!qevkj4");
 
-                                onDone(err);
+//                                onDone(err);
 
-                                return;
-                            }
+//                                return;
+//                            }
 
-                            break;
-                        }
-                    }
+//                            break;
+//                        }
+//                    }
 //                }
 
                 // Continue mapping on the same topology version as it was before.
